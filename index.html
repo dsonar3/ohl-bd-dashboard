@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OHL · BD Performance Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&display=swap');
 
@@ -657,6 +658,13 @@
 </head>
 <body>
 
+<!-- GLOBAL LOADER -->
+<div id="globalLoader" style="display:none;position:fixed;inset:0;background:rgba(10,12,15,0.85);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+  <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;"></div>
+  <div id="loaderMsg" style="font-family:var(--mono);font-size:12px;color:var(--accent);">Loading...</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
 <!-- HEADER -->
 <header class="header">
   <div class="logo">
@@ -677,9 +685,6 @@
     <button class="upload-btn" onclick="exportAsHTML()" style="background:linear-gradient(135deg,rgba(129,140,248,0.15),rgba(129,140,248,0.08));border-color:rgba(129,140,248,0.4);color:var(--accent3);" title="Download HTML with current data baked in">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export
-    </button>
-    <button class="upload-btn" onclick="clearSavedState()" style="background:linear-gradient(135deg,rgba(244,63,94,0.1),rgba(244,63,94,0.05));border-color:rgba(244,63,94,0.3);color:var(--red);" title="Reset all changes back to original data">
-      ↺ Reset
     </button>
     <input type="file" id="fileInput" accept=".xlsx,.xls" onchange="handleFileSelect(event)">
   </div>
@@ -999,14 +1004,16 @@
     <div class="form-row single">
       <div class="form-group">
         <div class="form-label">BD Executive *</div>
-        <select class="form-select" id="newBDName">
+        <select class="form-select" id="newBDName" onchange="onBDSelectChange(this)">
           <option value="">Select BD...</option>
           <option>Raza Shaikh</option>
           <option>Swaraaj Kane</option>
           <option>Abhijeet Deotale</option>
           <option>Vikas Patil</option>
           <option>Shahbaaz</option>
+          <option value="__new__">+ Add new BD person...</option>
         </select>
+        <input type="text" class="form-input" id="newBDNameInput" placeholder="Enter new BD name..." style="display:none;margin-top:6px;">
       </div>
     </div>
     <div id="addDoctorError" style="font-size:11px; color:var(--red); font-family:var(--mono); margin-top:4px; display:none;"></div>
@@ -1019,140 +1026,205 @@
 
 <script>
 // ═══════════════════════════════════════════════════════
-// EMBEDDED DATA (from Doctor Tracker + May Revenue)
+// SUPABASE CONFIG
+// ═══════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://dfbzrvbmtmryidrkxbyx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmYnpydmJtdG1yeWlkcmt4Ynl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyMzg2OTUsImV4cCI6MjA5NTgxNDY5NX0.HJF6uSCcZuVntX2Gy-e4CDh-2PioKJCKSGs3oRpG3B8';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ═══════════════════════════════════════════════════════
+// CONSTANTS
 // ═══════════════════════════════════════════════════════
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const ACTIVE_MONTHS = ['Jan','Feb','Mar','Apr','May'];
 
-const BD_COLORS = {
-  'Raza Shaikh':     { pill: 'pill-raza',     hex: '#00d4aa' },
-  'Swaraaj Kane':    { pill: 'pill-swaraaj',  hex: '#f97316' },
-  'Abhijeet Deotale':{ pill: 'pill-abhijeet', hex: '#818cf8' },
-  'Vikas Patil':     { pill: 'pill-vikas',    hex: '#fb7185' },
-  'Shahbaaz':        { pill: 'pill-shahbaaz', hex: '#facc15' },
-};
-
-// Core doctor data (from tracker)
-let DOCTORS = [
-  {id:'10038', name:'Prakriti Advanced Homeopathic Clinic', bd:'Raza Shaikh', onboard:'Mar', Jan:0, Feb:0, Mar:2687, Apr:7034, May:5356, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10284', name:'Shree Krishna Clinic', bd:'Raza Shaikh', onboard:'Mar', Jan:0, Feb:0, Mar:18043, Apr:6112, May:6483, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10540', name:'The Healing Space Homeopathy', bd:'Raza Shaikh', onboard:'Mar', Jan:0, Feb:0, Mar:6399, Apr:7914, May:7849, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10189', name:'Dr. Chhabildas Sanghvi Eye Hospital', bd:'Raza Shaikh', onboard:'Mar', Jan:0, Feb:0, Mar:3744, Apr:1442, May:514, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10580', name:'Dr Ashish Shah', bd:'Raza Shaikh', onboard:'Mar', Jan:0, Feb:0, Mar:3805, Apr:5091, May:6525, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10595', name:'Hayat Clinic', bd:'Raza Shaikh', onboard:'Mar', Jan:0, Feb:0, Mar:7117, Apr:20827, May:4478, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10114', name:'Sushrusha Clinic Kharghar', bd:'Swaraaj Kane', onboard:'Mar', Jan:0, Feb:0, Mar:11761, Apr:6338, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10273', name:"Dr Jyoti's Aesthetic Clinic", bd:'Swaraaj Kane', onboard:'Mar', Jan:0, Feb:0, Mar:5357, Apr:2597, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10200', name:'Netra Aroghyam Clinic', bd:'Abhijeet Deotale', onboard:'Mar', Jan:0, Feb:0, Mar:1797, Apr:2575, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10503', name:'Nu-Life Homoeopathy', bd:'Abhijeet Deotale', onboard:'Mar', Jan:0, Feb:0, Mar:1528, Apr:3736, May:3119, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10608', name:'NLH - Dr. Megha Jodhavat', bd:'Abhijeet Deotale', onboard:'Mar', Jan:0, Feb:0, Mar:1582, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9961', name:'SHREERam CLINIC', bd:'Vikas Patil', onboard:'Mar', Jan:0, Feb:0, Mar:8952, Apr:5115, May:3793, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10654', name:'Prakriti Advanced Homeopathic Clinic (2)', bd:'Raza Shaikh', onboard:'Mar', Jan:0, Feb:0, Mar:0, Apr:2796, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10719', name:'Insight Diagnostic Centre', bd:'Raza Shaikh', onboard:'Apr', Jan:0, Feb:0, Mar:0, Apr:3258, May:6155, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10671', name:"Dr.Sachit S Kapoor Healing Willow", bd:'Abhijeet Deotale', onboard:'Apr', Jan:0, Feb:0, Mar:0, Apr:2433, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10735', name:'K Skinique Clinic', bd:'Swaraaj Kane', onboard:'Apr', Jan:0, Feb:0, Mar:0, Apr:2932, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9933', name:'Homeo clinic', bd:'Vikas Patil', onboard:'Apr', Jan:0, Feb:0, Mar:0, Apr:4447, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10259', name:'Nirmin Superspeciality Clinic', bd:'Swaraaj Kane', onboard:'Apr', Jan:0, Feb:0, Mar:0, Apr:4581, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10654', name:'MOH Clinics', bd:'Raza Shaikh', onboard:'Apr', Jan:0, Feb:0, Mar:0, Apr:2796, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9860', name:'Derma Pro Centre', bd:'Raza Shaikh', onboard:'Jan', Jan:7298, Feb:1729, Mar:3858, Apr:2660, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9694', name:'Maheshwari', bd:'Vikas Patil', onboard:'Jan', Jan:5242, Feb:0, Mar:0, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9751', name:"Dr Gangwani's Vascular Clinic", bd:'Raza Shaikh', onboard:'Jan', Jan:23568, Feb:59121, Mar:61227, Apr:28545, May:36182, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9731', name:'The Luxe clinic', bd:'Swaraaj Kane', onboard:'Jan', Jan:6305, Feb:9307, Mar:5638, Apr:2607, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9150', name:'Fauziya Hospital', bd:'Vikas Patil', onboard:'Jan', Jan:8520, Feb:0, Mar:0, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10041', name:'Dr. Abdullah', bd:'Shahbaaz', onboard:'Jan', Jan:6455, Feb:0, Mar:436, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9662', name:'Aarogyam Clinic', bd:'Shahbaaz', onboard:'Jan', Jan:3084, Feb:1279, Mar:4586, Apr:3336, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10038', name:'Prakriti Advanced Homeopathic Clinic (Raza Jan)', bd:'Raza Shaikh', onboard:'Jan', Jan:4078, Feb:383, Mar:2687, Apr:7034, May:5356, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9970', name:'Dermavenue Aesthetic Clinic', bd:'Raza Shaikh', onboard:'Jan', Jan:3556, Feb:12263, Mar:3171, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9110', name:'Skinsoul Clinic', bd:'Swaraaj Kane', onboard:'Jan', Jan:7645, Feb:0, Mar:0, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10027', name:'The Potent Homeopathic Clinic', bd:'Abhijeet Deotale', onboard:'Jan', Jan:9703, Feb:6482, Mar:0, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'4613', name:'Akshay Clinic', bd:'Vikas Patil', onboard:'Jan', Jan:2650, Feb:2128, Mar:0, Apr:117, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10037', name:"Dr. Savla's Homeopathy Clinic", bd:'Abhijeet Deotale', onboard:'Feb', Jan:0, Feb:5731, Mar:3836, Apr:2799, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10076', name:'Dr.niriksha gala', bd:'Raza Shaikh', onboard:'Feb', Jan:0, Feb:1064, Mar:0, Apr:2915, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10322', name:'Dr. Varun Deodhar Clinic', bd:'Abhijeet Deotale', onboard:'Feb', Jan:0, Feb:1809, Mar:8654, Apr:15141, May:17076, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10221', name:'Maitreyi Clinic', bd:'Abhijeet Deotale', onboard:'Feb', Jan:0, Feb:1452, Mar:1022, Apr:1537, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10325', name:'Dr S Avhad Clinic', bd:'Raza Shaikh', onboard:'Feb', Jan:0, Feb:2786, Mar:3836, Apr:2557, May:9479, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'9617', name:'Dr Khans Healthcare clinic', bd:'Swaraaj Kane', onboard:'Feb', Jan:0, Feb:3373, Mar:1278, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10250', name:"Dr Kiran's Homeopathic Clinic", bd:'Raza Shaikh', onboard:'Feb', Jan:0, Feb:8840, Mar:0, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10233', name:"Dr.Pallavi Sule's SKIN HAIR AESTHETIC CLINIC", bd:'Vikas Patil', onboard:'Feb', Jan:0, Feb:13846, Mar:20999, Apr:9232, May:3583, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10249', name:'Shrivishwadev Clinic', bd:'Abhijeet Deotale', onboard:'Feb', Jan:0, Feb:3157, Mar:0, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10275', name:"Dr Mayuri's Wellness clinic", bd:'Swaraaj Kane', onboard:'Feb', Jan:0, Feb:10568, Mar:0, Apr:0, May:799, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-  {id:'10199', name:"Dr Ganesh R Nair's Clinic", bd:'Swaraaj Kane', onboard:'Feb', Jan:0, Feb:5139, Mar:3397, Apr:0, May:0, Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-];
-
-// Recalculate totals
-DOCTORS.forEach(d => {
-  d.total = MONTHS.reduce((s,m) => s + (d[m]||0), 0);
-});
+let DOCTORS = [];
+let BD_COLORS = {};
+let currentBDFilter = 'All';
+let selectedUploadMonth = null;
+let uploadedFile = null;
+let isDarkMode = true;
 
 // ═══════════════════════════════════════════════════════
-// COMPUTED DATA
+// LOADING OVERLAY
 // ═══════════════════════════════════════════════════════
-function getMonthlyTotals() {
-  return MONTHS.map(m => DOCTORS.reduce((s,d) => s + (d[m]||0), 0));
+function showLoader(msg = 'Loading...') {
+  document.getElementById('globalLoader').style.display = 'flex';
+  document.getElementById('loaderMsg').textContent = msg;
+}
+function hideLoader() {
+  document.getElementById('globalLoader').style.display = 'none';
 }
 
-function getBDSummary() {
-  const bds = {};
-  DOCTORS.forEach(d => {
-    if (!bds[d.bd]) bds[d.bd] = {docs:0, total:0};
-    MONTHS.forEach(m => { bds[d.bd][m] = (bds[d.bd][m]||0) + (d[m]||0); });
-    bds[d.bd].total += d.total;
-    bds[d.bd].docs++;
+// ═══════════════════════════════════════════════════════
+// SUPABASE — LOAD ALL DATA
+// ═══════════════════════════════════════════════════════
+async function loadFromSupabase() {
+  showLoader('Connecting to database...');
+  try {
+    // Load BD colors
+    const { data: colors, error: ce } = await sb.from('bd_colors').select('*');
+    if (ce) throw ce;
+    BD_COLORS = {};
+    colors.forEach(c => {
+      BD_COLORS[c.bd_name] = { pill: c.pill_class, hex: c.hex_color };
+    });
+
+    // Load doctors
+    const { data: docs, error: de } = await sb.from('doctors').select('*');
+    if (de) throw de;
+
+    // Load all revenue
+    const { data: revs, error: re } = await sb.from('revenue').select('*');
+    if (re) throw re;
+
+    // Build revenue lookup: { partner_id_month_year: amount }
+    const revMap = {};
+    revs.forEach(r => {
+      revMap[`${r.partner_id}_${r.month}_${r.year}`] = r.amount;
+    });
+
+    // Merge doctors + revenue
+    DOCTORS = docs.map(d => {
+      const doc = {
+        id: d.id,
+        name: d.name,
+        bd: d.bd,
+        onboard: d.onboard,
+        total: 0
+      };
+      MONTHS.forEach(m => {
+        doc[m] = revMap[`${d.id}_${m}_2025`] || 0;
+      });
+      doc.total = MONTHS.reduce((s, m) => s + (doc[m] || 0), 0);
+      return doc;
+    });
+
+    hideLoader();
+    renderAll();
+    rebuildBDFilterBar();
+    updateLastUpdated();
+  } catch (err) {
+    hideLoader();
+    showToast('❌ Database error: ' + err.message);
+    console.error('Supabase load error:', err);
+  }
+}
+
+function updateLastUpdated() {
+  const lastIdx = MONTHS.reduce((last, m, i) => {
+    const total = DOCTORS.reduce((s, d) => s + (d[m] || 0), 0);
+    return total > 0 ? i : last;
+  }, -1);
+  const lastMonth = lastIdx >= 0 ? MONTHS[lastIdx] : 'N/A';
+  document.getElementById('lastUpdated').textContent = `Live data · Jan–${lastMonth} 2025`;
+}
+
+// ═══════════════════════════════════════════════════════
+// SUPABASE — SAVE NEW DOCTOR
+// ═══════════════════════════════════════════════════════
+async function saveNewDoctorToSupabase(doc) {
+  const { error: de } = await sb.from('doctors').insert({
+    id: doc.id,
+    name: doc.name,
+    bd: doc.bd,
+    onboard: doc.onboard
   });
-  return bds;
+  if (de) throw de;
 }
 
+async function saveBDColorToSupabase(bdName, pillClass, hexColor) {
+  const { error } = await sb.from('bd_colors').upsert({
+    bd_name: bdName,
+    pill_class: pillClass,
+    hex_color: hexColor
+  });
+  if (error) throw error;
+}
+
+// ═══════════════════════════════════════════════════════
+// SUPABASE — UPSERT REVENUE FOR A MONTH
+// ═══════════════════════════════════════════════════════
+async function upsertRevenue(partnerId, month, amount, year = 2025) {
+  const { error } = await sb.from('revenue').upsert(
+    { partner_id: partnerId, month, year, amount, updated_at: new Date().toISOString() },
+    { onConflict: 'partner_id,month,year' }
+  );
+  if (error) throw error;
+}
+
+// ═══════════════════════════════════════════════════════
+// FORMAT HELPERS
+// ═══════════════════════════════════════════════════════
 function fmt(n) {
   if (!n || n === 0) return '—';
-  if (n >= 100000) return '₹' + (n/100000).toFixed(1) + 'L';
-  if (n >= 1000) return '₹' + (n/1000).toFixed(1) + 'K';
+  if (n >= 100000) return '₹' + (n / 100000).toFixed(1) + 'L';
+  if (n >= 1000) return '₹' + (n / 1000).toFixed(1) + 'K';
   return '₹' + Math.round(n);
 }
-
 function fmtFull(n) {
   if (!n || n === 0) return '—';
   return '₹' + Math.round(n).toLocaleString('en-IN');
 }
 
 // ═══════════════════════════════════════════════════════
-// RENDER FUNCTIONS
+// COMPUTED
+// ═══════════════════════════════════════════════════════
+function getMonthlyTotals() {
+  return MONTHS.map(m => DOCTORS.reduce((s, d) => s + (d[m] || 0), 0));
+}
+function getBDSummary() {
+  const bds = {};
+  DOCTORS.forEach(d => {
+    if (!bds[d.bd]) bds[d.bd] = { docs: 0, total: 0 };
+    MONTHS.forEach(m => { bds[d.bd][m] = (bds[d.bd][m] || 0) + (d[m] || 0); });
+    bds[d.bd].total += d.total;
+    bds[d.bd].docs++;
+  });
+  return bds;
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER FUNCTIONS (unchanged logic, same as before)
 // ═══════════════════════════════════════════════════════
 function renderKPIs() {
+  if (!DOCTORS.length) return;
   const totals = getMonthlyTotals();
-  const grandTotal = totals.reduce((a,b)=>a+b,0);
+  const grandTotal = totals.reduce((a, b) => a + b, 0);
+  const lastFilledIdx = totals.reduce((last, v, i) => v > 0 ? i : last, -1);
   const mayRev = totals[4];
   const aprRev = totals[3];
-  const mayChange = aprRev > 0 ? ((mayRev-aprRev)/aprRev*100).toFixed(1) : 0;
+  const mayChange = aprRev > 0 ? ((mayRev - aprRev) / aprRev * 100).toFixed(1) : 0;
 
   document.getElementById('kpiDoctors').textContent = DOCTORS.length;
   document.getElementById('kpiTotal').textContent = fmt(grandTotal);
   document.getElementById('kpiTotalBadge').textContent = `+${fmt(mayRev)} May`;
   document.getElementById('kpiMay').textContent = fmt(mayRev);
 
-  const activeInMay = DOCTORS.filter(d => (d.May||0) > 0).length;
+  const activeInMay = DOCTORS.filter(d => (d.May || 0) > 0).length;
   document.getElementById('kpiMayActive').textContent = `${activeInMay}/${DOCTORS.length} active`;
   document.getElementById('kpiMayTrend').textContent = `${mayChange > 0 ? '↑' : '↓'}${Math.abs(mayChange)}% vs Apr`;
   document.getElementById('kpiMayTrend').className = `kpi-badge ${mayChange >= 0 ? 'badge-up' : 'badge-down'}`;
 
   const bds = getBDSummary();
-  const topBD = Object.entries(bds).sort((a,b)=>b[1].total-a[1].total)[0];
-  const firstName = topBD[0].split(' ')[0];
-  document.getElementById('kpiTopBD').textContent = firstName;
-  document.getElementById('kpiTopBDSub').textContent = `${fmt(topBD[1].total)} total`;
-  const share = (topBD[1].total / grandTotal * 100).toFixed(0);
-  document.getElementById('kpiTopBDShare').textContent = `${share}% of team`;
+  const topBD = Object.entries(bds).sort((a, b) => b[1].total - a[1].total)[0];
+  if (topBD) {
+    document.getElementById('kpiTopBD').textContent = topBD[0].split(' ')[0];
+    document.getElementById('kpiTopBDSub').textContent = `${fmt(topBD[1].total)} total`;
+    const share = (topBD[1].total / grandTotal * 100).toFixed(0);
+    document.getElementById('kpiTopBDShare').textContent = `${share}% of team`;
+  }
 
   const zeroMay = DOCTORS.filter(d => {
     const onboardIdx = MONTHS.indexOf(d.onboard);
-    return onboardIdx <= 4 && (d.May||0) === 0;
+    return onboardIdx <= 4 && (d.May || 0) === 0;
   }).length;
   document.getElementById('kpiAtRisk').textContent = zeroMay;
-
   document.getElementById('avgRevDoc').textContent = fmt(grandTotal / DOCTORS.length);
   document.getElementById('activeMay').textContent = activeInMay;
   document.getElementById('zeroMay').textContent = zeroMay;
 
-  const best = [...DOCTORS].sort((a,b)=>b.total-a.total)[0];
-  document.getElementById('bestClinic').textContent = best.name.split(' ').slice(0,2).join(' ');
+  const best = [...DOCTORS].sort((a, b) => b.total - a.total)[0];
+  if (best) document.getElementById('bestClinic').textContent = best.name.split(' ').slice(0, 2).join(' ');
 }
 
 function renderBarChart() {
@@ -1162,10 +1234,9 @@ function renderBarChart() {
   const labels = document.getElementById('barLabels');
   chart.innerHTML = '';
   labels.innerHTML = '';
-
   MONTHS.forEach((m, i) => {
     const val = totals[i];
-    const h = maxVal > 0 ? Math.max((val/maxVal)*100, val > 0 ? 3 : 0) : 0;
+    const h = maxVal > 0 ? Math.max((val / maxVal) * 100, val > 0 ? 3 : 0) : 0;
     const group = document.createElement('div');
     group.className = 'bar-group';
     const bar = document.createElement('div');
@@ -1174,7 +1245,6 @@ function renderBarChart() {
     bar.setAttribute('data-val', fmtFull(val));
     group.appendChild(bar);
     chart.appendChild(group);
-
     const lbl = document.createElement('div');
     lbl.className = 'bar-label';
     lbl.style.flex = '1';
@@ -1187,18 +1257,16 @@ function renderBarChart() {
 
 function renderOnboardingChart() {
   const onboardCounts = {};
-  DOCTORS.forEach(d => { onboardCounts[d.onboard] = (onboardCounts[d.onboard]||0)+1; });
-  const months = ['Jan','Feb','Mar','Apr','May'];
-  const counts = months.map(m => onboardCounts[m]||0);
+  DOCTORS.forEach(d => { onboardCounts[d.onboard] = (onboardCounts[d.onboard] || 0) + 1; });
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May'];
+  const counts = months.map(m => onboardCounts[m] || 0);
   const maxC = Math.max(...counts);
-
   const chart = document.getElementById('onboardingChart');
   const labels = document.getElementById('onboardLabels');
   chart.innerHTML = '';
   labels.innerHTML = '';
-
   counts.forEach((c, i) => {
-    const h = maxC > 0 ? Math.max((c/maxC)*100, c>0?5:0) : 0;
+    const h = maxC > 0 ? Math.max((c / maxC) * 100, c > 0 ? 5 : 0) : 0;
     const group = document.createElement('div');
     group.className = 'bar-group';
     const bar = document.createElement('div');
@@ -1208,7 +1276,6 @@ function renderOnboardingChart() {
     bar.setAttribute('data-val', `${c} doctors`);
     group.appendChild(bar);
     chart.appendChild(group);
-
     const lbl = document.createElement('div');
     lbl.style.flex = '1';
     lbl.style.textAlign = 'center';
@@ -1222,25 +1289,21 @@ function renderOnboardingChart() {
 
 function renderBDTable() {
   const bds = getBDSummary();
-  const grandTotal = Object.values(bds).reduce((s,b)=>s+b.total,0);
-  const sorted = Object.entries(bds).sort((a,b)=>b[1].total-a[1].total);
+  const grandTotal = Object.values(bds).reduce((s, b) => s + b.total, 0);
+  const sorted = Object.entries(bds).sort((a, b) => b[1].total - a[1].total);
   const tbody = document.getElementById('bdTableBody');
   tbody.innerHTML = '';
-
   sorted.forEach(([bd, data]) => {
     const color = BD_COLORS[bd]?.hex || '#888';
-    const share = (data.total/grandTotal*100).toFixed(0);
+    const share = (data.total / grandTotal * 100).toFixed(0);
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="bd-name"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:8px;"></span>${bd}</td>
       <td class="mono-val">${data.docs}</td>
       ${['Jan','Feb','Mar','Apr','May'].map(m => `<td class="mono-val ${(data[m]||0)>0?'rev-pos':'rev-zero'}">${fmt(data[m]||0)}</td>`).join('')}
-      <td class="mono-val" style="color:var(--text); font-weight:500;">${fmt(data.total)}</td>
-      <td>
-        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">${share}%</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${share}%; background:${color};"></div></div>
-      </td>
-    `;
+      <td class="mono-val" style="color:var(--text);font-weight:500;">${fmt(data.total)}</td>
+      <td><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">${share}%</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${share}%;background:${color};"></div></div></td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1249,27 +1312,22 @@ function renderCohortTable(tableId) {
   const cohorts = {};
   DOCTORS.forEach(d => {
     const ob = d.onboard;
-    if (!cohorts[ob]) cohorts[ob] = {count:0, months:[]};
+    if (!cohorts[ob]) cohorts[ob] = { count: 0, months: [] };
     cohorts[ob].count++;
     const obIdx = MONTHS.indexOf(ob);
-    const revByMonth = MONTHS.slice(obIdx).map(m => d[m]||0);
-    if (!cohorts[ob].months.length) cohorts[ob].months = revByMonth.map(()=>0);
-    revByMonth.forEach((v,i) => {
-      if (cohorts[ob].months[i] !== undefined) cohorts[ob].months[i] += v;
-    });
+    const revByMonth = MONTHS.slice(obIdx).map(m => d[m] || 0);
+    if (!cohorts[ob].months.length) cohorts[ob].months = revByMonth.map(() => 0);
+    revByMonth.forEach((v, i) => { if (cohorts[ob].months[i] !== undefined) cohorts[ob].months[i] += v; });
   });
-
   const order = ['Jan','Feb','Mar','Apr','May'];
   const tbody = document.getElementById(tableId);
   tbody.innerHTML = '';
-
   order.forEach(ob => {
     if (!cohorts[ob]) return;
-    const {count, months} = cohorts[ob];
+    const { count, months } = cohorts[ob];
     const m = [months[0]||0, months[1]||0, months[2]||0, months[3]||0, months[4]||0];
-    const r2 = m[0]>0 ? (m[1]/m[0]*100).toFixed(0)+'%' : '—';
-    const r3 = m[0]>0 ? (m[2]/m[0]*100).toFixed(0)+'%' : '—';
-
+    const r2 = m[0] > 0 ? (m[1]/m[0]*100).toFixed(0)+'%' : '—';
+    const r3 = m[0] > 0 ? (m[2]/m[0]*100).toFixed(0)+'%' : '—';
     const cls = (v, ob, mi) => {
       const obIdx = MONTHS.indexOf(ob);
       if (obIdx + mi >= MONTHS.indexOf('May') + 1) return 'ct-blank';
@@ -1277,68 +1335,55 @@ function renderCohortTable(tableId) {
       if (v >= 1) return 'ct-yellow';
       return 'ct-red';
     };
-
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="font-weight:500;">${ob}</td>
-      <td style="font-family:var(--mono); color:var(--muted);">${count}</td>
+      <td style="font-family:var(--mono);color:var(--muted);">${count}</td>
       ${m.map((v,i) => `<td class="${cls(v,ob,i)}">${v>0?fmt(v):'₹0'}</td>`).join('')}
-      <td style="font-family:var(--mono); color:${parseFloat(r2)>=80?'var(--green)':parseFloat(r2)>=50?'var(--yellow)':'var(--red)'};">${r2}</td>
-      <td style="font-family:var(--mono); color:${parseFloat(r3)>=50?'var(--green)':parseFloat(r3)>=25?'var(--yellow)':'var(--red)'};">${r3}</td>
-    `;
+      <td style="font-family:var(--mono);color:${parseFloat(r2)>=80?'var(--green)':parseFloat(r2)>=50?'var(--yellow)':'var(--red)'};">${r2}</td>
+      <td style="font-family:var(--mono);color:${parseFloat(r3)>=50?'var(--green)':parseFloat(r3)>=25?'var(--yellow)':'var(--red)'};">${r3}</td>`;
     tbody.appendChild(tr);
   });
 }
 
 function getRevHeat(val, isActive) {
-  if (!isActive) return '#1e2430'; // grey - not yet onboarded
+  if (!isActive) return '#1e2430';
   if (val >= 8000) return '#10b981';
   if (val >= 1) return '#fbbf24';
   return '#f43f5e';
 }
 
-let currentBDFilter = 'All';
-
 function renderDocTable(filterBD = 'All', searchTerm = '') {
   const tbody = document.getElementById('docTableBody');
   tbody.innerHTML = '';
-
   let filtered = DOCTORS;
   if (filterBD !== 'All') filtered = filtered.filter(d => d.bd === filterBD);
   if (searchTerm) filtered = filtered.filter(d => d.name.toLowerCase().includes(searchTerm.toLowerCase()));
-
   document.getElementById('docCount').textContent = filtered.length;
-
   filtered.forEach((d, idx) => {
     const bdColor = BD_COLORS[d.bd]?.pill || '';
     const obIdx = MONTHS.indexOf(d.onboard);
     const months = ['Jan','Feb','Mar','Apr','May'];
-
-    // Heat dots
     const heatDots = months.map((m, mi) => {
       const isActive = mi >= obIdx;
       const color = getRevHeat(d[m]||0, isActive);
       return `<div class="heat-dot" style="background:${color};" title="${m}: ${fmtFull(d[m]||0)}"></div>`;
     }).join('');
-
-    // Trend
     const revs = months.filter((m,i) => i >= obIdx).map(m => d[m]||0);
     let trend = '—';
     if (revs.length >= 2) {
-      const last = revs[revs.length-1];
-      const prev = revs[revs.length-2];
+      const last = revs[revs.length-1], prev = revs[revs.length-2];
       if (prev === 0 && last > 0) trend = '<span class="trend-up">↑ New</span>';
       else if (last > prev*1.1) trend = '<span class="trend-up">↑ Growing</span>';
       else if (last === 0 && prev > 0) trend = '<span class="trend-down">↓ Dropped</span>';
       else if (last < prev*0.9 && last > 0) trend = '<span class="trend-down">↓ Declining</span>';
       else trend = '<span class="trend-flat">→ Stable</span>';
     }
-
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="font-family:var(--mono);color:var(--muted);">${idx+1}</td>
       <td style="font-family:var(--mono);font-size:11px;">${d.id}</td>
-      <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${d.name}">${d.name}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${d.name}">${d.name}</td>
       <td><span class="pill ${bdColor}">${d.bd.split(' ')[0]}</span></td>
       <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">${d.onboard}</td>
       ${months.map(m => {
@@ -1349,8 +1394,7 @@ function renderDocTable(filterBD = 'All', searchTerm = '') {
         return `<td class="rev-cell ${v>0?'rev-pos':'rev-zero'}">${v>0?fmt(v):'₹0'}</td>`;
       }).join('')}
       <td class="mono-val" style="font-weight:500;">${fmt(d.total)}</td>
-      <td>${trend}</td>
-    `;
+      <td>${trend}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1358,7 +1402,7 @@ function renderDocTable(filterBD = 'All', searchTerm = '') {
 function renderDropTable() {
   const bdStats = {};
   DOCTORS.forEach(d => {
-    if (!bdStats[d.bd]) bdStats[d.bd] = {total:0, healthy:0, low:0, dropped:0, dm2:0, dm3:0};
+    if (!bdStats[d.bd]) bdStats[d.bd] = {total:0,healthy:0,low:0,dropped:0,dm2:0,dm3:0};
     bdStats[d.bd].total++;
     const obIdx = MONTHS.indexOf(d.onboard);
     const revs = MONTHS.slice(obIdx).map(m => d[m]||0);
@@ -1369,7 +1413,6 @@ function renderDropTable() {
     if (revs[0] > 0 && revs.length > 1 && revs[1] === 0) bdStats[d.bd].dm2++;
     if (revs[0] > 0 && revs.length > 2 && revs[2] === 0) bdStats[d.bd].dm3++;
   });
-
   const tbody = document.getElementById('dropTableBody');
   tbody.innerHTML = '';
   Object.entries(bdStats).sort((a,b)=>b[1].total-a[1].total).forEach(([bd, s]) => {
@@ -1381,8 +1424,7 @@ function renderDropTable() {
       <td class="mono-val" style="color:var(--yellow);">${s.low}</td>
       <td class="mono-val" style="color:var(--red);">${s.dropped}</td>
       <td class="mono-val" style="color:var(--accent4);">${s.dm2}</td>
-      <td class="mono-val" style="color:var(--red);">${s.dm3}</td>
-    `;
+      <td class="mono-val" style="color:var(--red);">${s.dm3}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1393,48 +1435,58 @@ function renderAtRisk() {
     return obIdx <= 4 && (d.May||0) === 0;
   });
   atRisk.sort((a,b) => b.total - a.total);
-
   const tbody = document.getElementById('atRiskBody');
   tbody.innerHTML = '';
-
   atRisk.forEach((d, idx) => {
     const priority = idx < 5 ? '🔴 High' : idx < 12 ? '🟡 Med' : '⬜ Low';
     const bdColor = BD_COLORS[d.bd]?.pill || '';
     const obIdx = MONTHS.indexOf(d.onboard);
     const revs = MONTHS.map(m => d[m]||0);
-
-    // Last active month
     let lastActive = '—';
-    for (let i = 4; i >= 0; i--) {
-      if (revs[i] > 0) { lastActive = MONTHS[i]; break; }
-    }
-
-    // Peak
+    for (let i = 4; i >= 0; i--) { if (revs[i] > 0) { lastActive = MONTHS[i]; break; } }
     let peak = 0, peakMonth = '—';
-    MONTHS.forEach((m,i) => {
-      if ((d[m]||0) > peak) { peak = d[m]||0; peakMonth = m; }
-    });
-
-    // Consecutive zeros in May area
+    MONTHS.forEach((m,i) => { if ((d[m]||0) > peak) { peak = d[m]||0; peakMonth = m; } });
     let consZero = 0;
     for (let i = 4; i >= obIdx; i--) {
       if ((d[MONTHS[i]]||0) === 0) consZero++;
       else break;
     }
-
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="font-size:11px;">${priority}</td>
-      <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px;" title="${d.name}">${d.name}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;" title="${d.name}">${d.name}</td>
       <td><span class="pill ${bdColor}">${d.bd.split(' ')[0]}</span></td>
       <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">${d.onboard}</td>
-      <td style="font-family:var(--mono);font-size:11px; color:var(--muted);">${lastActive}</td>
-      <td style="font-family:var(--mono);font-size:11px; color:var(--muted);">${peakMonth}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">${lastActive}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">${peakMonth}</td>
       <td class="mono-val rev-pos">${fmt(peak)}</td>
       <td class="mono-val">${fmt(d.total)}</td>
-      <td style="font-family:var(--mono);font-size:11px; color:${consZero>=2?'var(--red)':'var(--yellow)'};">${consZero} month${consZero!==1?'s':''}</td>
-    `;
+      <td style="font-family:var(--mono);font-size:11px;color:${consZero>=2?'var(--red)':'var(--yellow)'};">${consZero} month${consZero!==1?'s':''}</td>`;
     tbody.appendChild(tr);
+  });
+}
+
+function renderAll() {
+  renderKPIs();
+  renderBarChart();
+  renderOnboardingChart();
+  renderBDTable();
+  renderCohortTable('cohortBody');
+  renderDocTable(currentBDFilter);
+}
+
+function rebuildBDFilterBar() {
+  const filterBar = document.querySelector('.filter-bar');
+  const existingBtns = [...filterBar.querySelectorAll('.filter-btn[data-bd]')];
+  existingBtns.forEach(b => b.remove());
+  const searchInput = filterBar.querySelector('.search-input');
+  Object.keys(BD_COLORS).forEach(bd => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.setAttribute('data-bd', bd);
+    btn.textContent = bd;
+    btn.onclick = function() { filterBD(bd, this); };
+    filterBar.insertBefore(btn, searchInput);
   });
 }
 
@@ -1465,7 +1517,6 @@ function filterDoctors() {
 // ═══════════════════════════════════════════════════════
 // THEME TOGGLE
 // ═══════════════════════════════════════════════════════
-let isDarkMode = true;
 function toggleTheme() {
   isDarkMode = !isDarkMode;
   document.body.classList.toggle('light-mode', !isDarkMode);
@@ -1475,8 +1526,6 @@ function toggleTheme() {
 // ═══════════════════════════════════════════════════════
 // UPLOAD MONTH SELECTOR
 // ═══════════════════════════════════════════════════════
-let selectedUploadMonth = null;
-
 function buildUploadMonthBtns() {
   const container = document.getElementById('uploadMonthBtns');
   container.innerHTML = '';
@@ -1503,16 +1552,32 @@ function openAddDoctorModal() {
   document.getElementById('newClinicName').value = '';
   document.getElementById('newOnboardMonth').value = '';
   document.getElementById('newBDName').value = '';
+  // Populate BD dropdown from live BD_COLORS
+  const sel = document.getElementById('newBDName');
+  sel.innerHTML = '<option value="">Select BD...</option>';
+  Object.keys(BD_COLORS).forEach(bd => {
+    const opt = document.createElement('option');
+    opt.value = bd;
+    opt.textContent = bd;
+    sel.appendChild(opt);
+  });
+  // Add "New BD..." option
+  const newOpt = document.createElement('option');
+  newOpt.value = '__new__';
+  newOpt.textContent = '+ Add new BD person...';
+  sel.appendChild(newOpt);
 }
 
 function closeAddDoctorModal() {
   document.getElementById('addDoctorModal').classList.remove('open');
+  document.getElementById('newBDNameInput').style.display = 'none';
 }
 
-function submitNewDoctor() {
+async function submitNewDoctor() {
   const id = document.getElementById('newPartnerId').value.trim();
   const name = document.getElementById('newClinicName').value.trim();
-  const bd = document.getElementById('newBDName').value;
+  let bd = document.getElementById('newBDName').value;
+  if (bd === '__new__') bd = document.getElementById('newBDNameInput').value.trim();
   const onboard = document.getElementById('newOnboardMonth').value;
   const errEl = document.getElementById('addDoctorError');
 
@@ -1521,109 +1586,67 @@ function submitNewDoctor() {
     errEl.style.display = 'block';
     return;
   }
-
-  // Add pill color if BD is new
-  if (!BD_COLORS[bd]) {
-    const colors = ['#00d4aa','#f97316','#818cf8','#fb7185','#facc15','#38bdf8','#a78bfa'];
-    const hex = colors[Object.keys(BD_COLORS).length % colors.length];
-    const key = bd.split(' ')[0].toLowerCase();
-    BD_COLORS[bd] = { pill: 'pill-' + key, hex };
-    const style = document.createElement('style');
-    style.textContent = `.pill-${key} { background: rgba(0,0,0,0.1); color: ${hex}; }`;
-    document.head.appendChild(style);
+  // Check duplicate ID
+  if (DOCTORS.find(d => d.id === id)) {
+    errEl.textContent = `⚠ Partner ID ${id} already exists.`;
+    errEl.style.display = 'block';
+    return;
   }
 
-  const newDoc = { id, name, bd, onboard, total: 0 };
-  MONTHS.forEach(m => { newDoc[m] = 0; });
-  DOCTORS.push(newDoc);
+  const btn = document.querySelector('#addDoctorModal .btn-process');
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
 
-  // Add to BD filter bar if new BD
-  const filterBar = document.querySelector('.filter-bar');
-  const existing = [...filterBar.querySelectorAll('.filter-btn')].map(b => b.textContent.trim());
-  if (!existing.includes(bd)) {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn';
-    btn.textContent = bd;
-    btn.onclick = function() { filterBD(bd, this); };
-    filterBar.insertBefore(btn, filterBar.querySelector('.search-input'));
+  try {
+    // Handle new BD color
+    if (!BD_COLORS[bd]) {
+      const palette = ['#00d4aa','#f97316','#818cf8','#fb7185','#facc15','#38bdf8','#a78bfa'];
+      const hex = palette[Object.keys(BD_COLORS).length % palette.length];
+      const key = bd.split(' ')[0].toLowerCase().replace(/[^a-z]/g,'');
+      BD_COLORS[bd] = { pill: 'pill-' + key, hex };
+      await saveBDColorToSupabase(bd, 'pill-' + key, hex);
+      // Inject pill CSS
+      const style = document.createElement('style');
+      style.textContent = `.pill-${key} { background: rgba(0,0,0,0.1); color: ${hex}; }`;
+      document.head.appendChild(style);
+    }
+
+    await saveNewDoctorToSupabase({ id, name, bd, onboard });
+
+    // Add to local DOCTORS array
+    const newDoc = { id, name, bd, onboard, total: 0 };
+    MONTHS.forEach(m => { newDoc[m] = 0; });
+    DOCTORS.push(newDoc);
+
+    closeAddDoctorModal();
+    showToast(`✓ ${name} added to database`);
+    rebuildBDFilterBar();
+    renderAll();
+    updateLastUpdated();
+    document.querySelector('[onclick="showSection(\'doctors\', this)"]').click();
+  } catch(err) {
+    errEl.textContent = '❌ Save failed: ' + err.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.textContent = 'Add Partner';
+    btn.disabled = false;
   }
+}
 
-  closeAddDoctorModal();
-  const t = document.getElementById('uploadToast');
-  t.textContent = `✓ ${name} (ID: ${id}) added under ${bd.split(' ')[0]}`;
-  t.className = 'upload-toast toast-success show';
-  setTimeout(() => t.classList.remove('show'), 4000);
-  persistState();
-  renderAll();
-  // Switch to doctors tab
-  document.querySelector('[onclick="showSection(\'doctors\', this)"]').click();
+// Show text input when "Add new BD" selected
+function onBDSelectChange(sel) {
+  const inp = document.getElementById('newBDNameInput');
+  inp.style.display = sel.value === '__new__' ? 'block' : 'none';
 }
 
 // ═══════════════════════════════════════════════════════
-// PERSISTENCE — localStorage
+// UPLOAD MODAL
 // ═══════════════════════════════════════════════════════
-const LS_KEY = 'ohl_bd_v1';
-
-function persistState() {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify({
-      doctors: DOCTORS,
-      bdColors: BD_COLORS,
-      savedAt: new Date().toISOString()
-    }));
-  } catch(e) { console.warn('localStorage write failed:', e); }
-}
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return false;
-    const snap = JSON.parse(raw);
-    if (!snap.doctors || !Array.isArray(snap.doctors)) return false;
-    DOCTORS.length = 0;
-    snap.doctors.forEach(d => DOCTORS.push(d));
-    if (snap.bdColors) Object.assign(BD_COLORS, snap.bdColors);
-    console.log('[OHL] State restored from localStorage (saved', snap.savedAt, ')');
-    return true;
-  } catch(e) {
-    console.warn('[OHL] localStorage restore failed, using hardcoded data:', e);
-    return false;
-  }
-}
-
-function clearSavedState() {
-  if (!confirm('This will delete all uploaded revenue and added clinics, reverting to original data. Continue?')) return;
-  localStorage.removeItem(LS_KEY);
-  location.reload();
-}
-
-function exportAsHTML() {
-  const src = document.documentElement.outerHTML;
-  const doctorsSrc = 'let DOCTORS = ' + JSON.stringify(DOCTORS, null, 2) + ';';
-  const bdColorsSrc = 'const BD_COLORS = ' + JSON.stringify(BD_COLORS, null, 2) + ';';
-  const updated = src
-    .replace(/const BD_COLORS\s*=\s*\{[\s\S]*?\};/, bdColorsSrc)
-    .replace(/let DOCTORS\s*=\s*\[[\s\S]*?\];/, doctorsSrc);
-  const blob = new Blob([updated], {type:'text/html'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  const dt = new Date();
-  a.download = `OHL_BD_${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,'0')}${String(dt.getDate()).padStart(2,'0')}.html`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  showToast('✓ Exported — open downloaded file to share or use offline');
-}
-
-let uploadedFile = null;
-
 function openUploadModal() {
-  // Default to the LAST month that has any data (so re-uploads to same month work naturally).
-  // User can always click a different month before processing.
   const lastFilledIdx = MONTHS.reduce((last, m, i) => {
     const total = DOCTORS.reduce((s,d) => s+(d[m]||0),0);
     return total > 0 ? i : last;
   }, -1);
-  // If no data yet, default to Jan. Otherwise default to the last filled month (not next).
   selectedUploadMonth = lastFilledIdx >= 0 ? MONTHS[lastFilledIdx] : MONTHS[0];
   buildUploadMonthBtns();
   document.getElementById('uploadModal').classList.add('open');
@@ -1644,17 +1667,14 @@ function handleDrop(e) {
   const file = e.dataTransfer.files[0];
   if (file) prepareFile(file);
 }
-
 function handleModalFile(e) {
   const file = e.target.files[0];
   if (file) prepareFile(file);
 }
-
 function handleFileSelect(e) {
   const file = e.target.files[0];
-  if (file) { openUploadModal(); setTimeout(()=>prepareFile(file),100); }
+  if (file) { openUploadModal(); setTimeout(() => prepareFile(file), 100); }
 }
-
 function prepareFile(file) {
   uploadedFile = file;
   const preview = document.getElementById('uploadPreview');
@@ -1663,32 +1683,36 @@ function prepareFile(file) {
   document.getElementById('processBtn').classList.add('ready');
 }
 
-function processUploadedRevenue() {
+async function processUploadedRevenue() {
   if (!uploadedFile) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const wb = XLSX.read(e.target.result, {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {header:1});
+  const targetMonth = selectedUploadMonth;
+  if (!targetMonth) { showToast('⚠ Please select a month first'); return; }
 
-      // Find header row
+  const btn = document.getElementById('processBtn');
+  btn.textContent = 'Uploading...';
+  btn.disabled = true;
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
       let headerRow = -1;
       for (let i = 0; i < Math.min(5, rows.length); i++) {
         if (rows[i] && rows[i].some(c => String(c||'').toUpperCase().includes('PARTNER_ID'))) {
           headerRow = i; break;
         }
       }
-
-      if (headerRow < 0) { showToast('❌ Could not find PARTNER_ID column. Check file format.'); closeUploadModal(); return; }
+      if (headerRow < 0) { showToast('❌ Could not find PARTNER_ID column.'); closeUploadModal(); return; }
 
       const headers = rows[headerRow].map(h => String(h||'').toUpperCase().trim());
       const pidCol = headers.findIndex(h => h.includes('PARTNER_ID'));
       const revCol = headers.findIndex(h => h.includes('NET_REVENUE') || h === 'SUM(NET_REVENUE)');
-
       if (pidCol < 0 || revCol < 0) { showToast('❌ Missing PARTNER_ID or NET_REVENUE columns.'); closeUploadModal(); return; }
 
-      // Build map — detect duplicates in source sheet
+      // Build map + detect duplicates
       const revMap = {};
       const dupPIDs = [];
       for (let i = headerRow+1; i < rows.length; i++) {
@@ -1698,42 +1722,42 @@ function processUploadedRevenue() {
         const rev = parseFloat(row[revCol]) || 0;
         if (pid && !isNaN(rev)) {
           if (revMap[pid] !== undefined) dupPIDs.push(pid);
-          revMap[pid] = rev; // last row wins
+          revMap[pid] = rev;
         }
       }
-      if (dupPIDs.length > 0) {
-        console.warn('[OHL] Duplicate partner IDs in sheet (last row used):', [...new Set(dupPIDs)].join(', '));
-      }
 
-      // Use user-selected month or fallback to auto-detect
-      let targetMonth = selectedUploadMonth;
-      if (!targetMonth) {
-        const lastFilledIdx = MONTHS.reduce((last, m, i) => {
-          const total = DOCTORS.reduce((s,d) => s+(d[m]||0),0);
-          return total > 0 ? i : last;
-        }, -1);
-        const nextMonthIdx = lastFilledIdx + 1;
-        targetMonth = MONTHS[nextMonthIdx] || 'May';
-      }
-
-      // Update doctors
+      // Upsert to Supabase in batches
+      showLoader(`Saving ${targetMonth} revenue to database...`);
       let matched = 0;
+      const upserts = [];
       DOCTORS.forEach(d => {
         if (revMap[d.id] !== undefined) {
-          d[targetMonth] = revMap[d.id];
           matched++;
+          d[targetMonth] = revMap[d.id];
+          upserts.push({ partner_id: d.id, month: targetMonth, year: 2025, amount: revMap[d.id], updated_at: new Date().toISOString() });
         }
       });
-      DOCTORS.forEach(d => { d.total = MONTHS.reduce((s,m)=>s+(d[m]||0),0); });
 
-      persistState();
+      if (upserts.length > 0) {
+        const { error } = await sb.from('revenue').upsert(upserts, { onConflict: 'partner_id,month,year' });
+        if (error) throw error;
+      }
+
+      DOCTORS.forEach(d => { d.total = MONTHS.reduce((s,m) => s+(d[m]||0), 0); });
+
+      hideLoader();
       closeUploadModal();
-      showToast(`✓ ${targetMonth} revenue loaded — ${matched}/${DOCTORS.length} partners matched`);
-      document.getElementById('lastUpdated').textContent = `Data: Jan–${targetMonth} 2025 (Updated)`;
+      const dupMsg = dupPIDs.length > 0 ? ` (⚠ ${dupPIDs.length} duplicate IDs in sheet)` : '';
+      showToast(`✓ ${targetMonth} saved to database — ${matched}/${DOCTORS.length} partners${dupMsg}`);
+      updateLastUpdated();
       renderAll();
     } catch(err) {
-      showToast('❌ Error reading file: ' + err.message);
+      hideLoader();
+      showToast('❌ Error: ' + err.message);
       closeUploadModal();
+    } finally {
+      btn.textContent = 'Process & Update Dashboard';
+      btn.disabled = false;
     }
   };
   reader.readAsArrayBuffer(uploadedFile);
@@ -1742,25 +1766,33 @@ function processUploadedRevenue() {
 function showToast(msg) {
   const t = document.getElementById('uploadToast');
   t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 4000);
+  t.className = 'upload-toast show';
+  setTimeout(() => t.classList.remove('show'), 5000);
+}
+
+// ═══════════════════════════════════════════════════════
+// EXPORT (HTML snapshot with current data baked in)
+// ═══════════════════════════════════════════════════════
+function exportAsHTML() {
+  showToast('⏳ Preparing export...');
+  setTimeout(() => {
+    const src = document.documentElement.outerHTML;
+    const blob = new Blob([src], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const dt = new Date();
+    a.download = `OHL_BD_${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,'0')}${String(dt.getDate()).padStart(2,'0')}.html`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('✓ Exported successfully');
+  }, 100);
 }
 
 // ═══════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════
-function renderAll() {
-  renderKPIs();
-  renderBarChart();
-  renderOnboardingChart();
-  renderBDTable();
-  renderCohortTable('cohortBody');
-  renderDocTable(currentBDFilter);
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-  loadState(); // restore from localStorage if available
-  renderAll();
+  loadFromSupabase();
 });
 </script>
 </body>
