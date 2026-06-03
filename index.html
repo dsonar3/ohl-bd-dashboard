@@ -2279,6 +2279,7 @@ function renderDocTable(filterBD = 'All', searchTerm = '') {
   filtered.forEach((d, idx) => {
     const bdColor = BD_COLORS[d.bd] && BD_COLORS[d.bd].pill || '';
     const obIdx = MONTHS.indexOf(d.original_onboard || d.onboard);
+    const revs = activeFilled.filter(m => MONTHS.indexOf(m) >= obIdx).map(m => d[m]||0);
     let trend = '<span class="trend-none">—</span>';
     if (revs.length >= 2) {
       const last = revs[revs.length-1], prev = revs[revs.length-2];
