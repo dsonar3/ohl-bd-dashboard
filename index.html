@@ -225,9 +225,6 @@
     border-radius: 10px;
     overflow: hidden;
   }
-  .card.allow-overflow {
-    overflow: visible;
-  }
   .card-header {
     padding: 16px 20px;
     border-bottom: 1px solid var(--border);
@@ -581,10 +578,9 @@
     position: relative;
     background: var(--faint);
     border-radius: 8px;
-    padding: 16px 16px 28px 32px;
-    height: 300px;
+    padding: 16px;
+    height: 280px;
     border: 1px solid var(--border);
-    overflow: visible;
   }
   .quadrant-canvas {
     position: relative;
@@ -601,19 +597,8 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
-  .quadrant-axis-x { 
-    bottom: 2px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    white-space: nowrap;
-  }
-  .quadrant-axis-y { 
-    left: 2px; 
-    top: 50%; 
-    transform: translateY(-50%) rotate(-90deg); 
-    transform-origin: center;
-    white-space: nowrap;
-  }
+  .quadrant-axis-x { bottom: -18px; left: 50%; transform: translateX(-50%); }
+  .quadrant-axis-y { left: -22px; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: center; }
   .quadrant-quad-label {
     position: absolute;
     font-family: var(--mono);
@@ -1219,7 +1204,7 @@
     </div>
 
     <!-- ACTIVITY ANALYSIS — Quadrant + Efficiency Leaderboard -->
-    <div class="card allow-overflow" style="margin-bottom:20px;">
+    <div class="card" style="margin-bottom:20px;">
       <div class="card-header">
         <div class="card-title">📊 Activity Analytics — <span id="analysisMonthLabel">May 2025</span></div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--muted);">Activity drives revenue — measure both</div>
@@ -1228,16 +1213,22 @@
         <!-- Stat strip -->
         <div class="activity-stat-strip" id="activityStatStrip"></div>
 
-        <!-- Activity Analysis - Simple BD Performance Chart -->
+        <!-- Quadrant + Leaderboard -->
         <div class="grid-2" style="margin-bottom:0;">
           <div>
-            <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">BD Performance This Month</div>
-            <div id="bdPerformanceChart" style="background:var(--faint);border:1px solid var(--border);border-radius:8px;padding:16px;min-height:300px;">
-              <!-- Chart renders here -->
+            <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Visits vs Revenue Quadrant</div>
+            <div class="quadrant-wrap">
+              <div class="quadrant-quad-label q-label-star">🏆 Stars</div>
+              <div class="quadrant-quad-label q-label-eff">⚡ Efficient</div>
+              <div class="quadrant-quad-label q-label-busy">⚠️ Busy</div>
+              <div class="quadrant-quad-label q-label-risk">🚨 At-Risk</div>
+              <div class="quadrant-canvas" id="quadrantCanvas"></div>
+              <div class="quadrant-axis-label quadrant-axis-x">Visits →</div>
+              <div class="quadrant-axis-label quadrant-axis-y">Revenue →</div>
             </div>
           </div>
           <div>
-            <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Efficiency Leaderboard — ₹ per visit</div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Efficiency Leaderboard — ₹ per visit</div>
             <div style="background:var(--faint);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
               <table class="leaderboard-table">
                 <thead><tr><th>#</th><th>BD</th><th>Visits</th><th>Regs</th><th>Conv</th><th>₹/Visit</th><th>₹/Reg</th></tr></thead>
@@ -1247,8 +1238,10 @@
             <div id="efficiencyInsight" style="margin-top:10px;padding:10px 12px;background:rgba(129,140,248,0.06);border:1px solid rgba(129,140,248,0.2);border-radius:6px;font-size:12px;color:var(--text);line-height:1.5;"></div>
           </div>
         </div>
+      </div>
+    </div>
 
-<!-- ONBOARDED DOCTORS THIS MONTH -->
+    <!-- ONBOARDED DOCTORS THIS MONTH -->
     <div class="card" style="margin-bottom:20px;">
       <div class="card-header">
         <div class="card-title">🏥 Onboarded This Month — <span id="onboardMonthLabel2">May 2025</span></div>
@@ -1478,7 +1471,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // CONSTANTS
 // ═══════════════════════════════════════════════════════
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const DASHBOARD_YEAR = 2025; // Update when moving to next year
+const DASHBOARD_YEAR = 2025;
 
 let DOCTORS = [];
 let BD_COLORS = {};
@@ -1486,20 +1479,6 @@ let currentBDFilter = 'All';
 let selectedUploadMonth = null;
 let uploadedFile = null;
 let isDarkMode = true;
-
-// ═══════════════════════════════════════════════════════
-// NAVIGATION (early — called by HTML onclick)
-// ═══════════════════════════════════════════════════════
-function showSection(id, tab) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  tab.classList.add('active');
-  if (id === 'doctors') { renderDocTable(currentBDFilter); buildCohortFilterBtns(); }
-  if (id === 'cohort') { renderCohortTable('cohortDetailBody'); renderDropTable(); }
-  if (id === 'atRisk') renderAtRisk();
-  if (id === 'bdHealth') renderBDHealth();
-}
 
 // ═══════════════════════════════════════════════════════
 // LOADING OVERLAY
@@ -2206,7 +2185,16 @@ function rebuildBDFilterBar() {
 // ═══════════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════════
-
+function showSection(id, tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  tab.classList.add('active');
+  if (id === 'doctors') { renderDocTable(currentBDFilter); buildCohortFilterBtns(); }
+  if (id === 'cohort') { renderCohortTable('cohortDetailBody'); renderDropTable(); }
+  if (id === 'atRisk') renderAtRisk();
+  if (id === 'bdHealth') renderBDHealth();
+}
 
 // ═══════════════════════════════════════════════════════
 // COHORT CROSS-FILTER
@@ -2653,72 +2641,6 @@ let healthViewMonth = null;
 // ═══════════════════════════════════════════════════════
 // BD HEALTH — RENDER
 // ═══════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════
-// BD PERFORMANCE CHART — Simple Bar Chart
-// ═══════════════════════════════════════════════════════
-function renderBDPerformanceChart(month) {
-  const container = document.getElementById('bdPerformanceChart');
-  if (!container) return;
-  
-  const bds = Object.keys(BD_COLORS);
-  const bdStats = bds.map(bd => {
-    const docs = DOCTORS.filter(d => d.bd === bd);
-    const visits = activityData[`${bd}_${month}_${DASHBOARD_YEAR}`]?.visits || 0;
-    const regs = activityData[`${bd}_${month}_${DASHBOARD_YEAR}`]?.registrations || 0;
-    const monthRev = docs.reduce((s, d) => s + (d[month] || 0), 0);
-    const active = docs.filter(d => (d[month] || 0) > 0).length;
-    return { bd, visits, regs, monthRev, active, total: docs.length };
-  }).filter(b => b.visits > 0 || b.monthRev > 0 || b.total > 0);
-  
-  if (bdStats.length === 0) {
-    container.innerHTML = `<div class="empty-state"><span class="emoji">📊</span><div class="label">No activity yet.</div></div>`;
-    return;
-  }
-  
-  // Sort by revenue
-  bdStats.sort((a, b) => b.monthRev - a.monthRev);
-  
-  const maxRev = Math.max(...bdStats.map(b => b.monthRev), 1);
-  const maxVisits = Math.max(...bdStats.map(b => b.visits), 1);
-  
-  let html = `<div style="display:flex;flex-direction:column;gap:16px;">`;
-  
-  bdStats.forEach((b, idx) => {
-    const color = BD_COLORS[b.bd]?.hex || '#888';
-    const revWidth = (b.monthRev / maxRev) * 100;
-    const visitWidth = (b.visits / maxVisits) * 100;
-    const icon = idx < 3 ? ['🥇','🥈','🥉'][idx] : '  ';
-    
-    html += `
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <div style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:13px;">
-          <span>${icon}</span>
-          <span style="width:80px;color:${color};">${b.bd.split(' ')[0]}</span>
-          <div style="flex:1;display:flex;gap:12px;font-family:var(--mono);font-size:11px;color:var(--muted);">
-            <span>${b.visits} visits</span>
-            <span>·</span>
-            <span>${b.regs} regs</span>
-            <span>·</span>
-            <span>${b.active}/${b.total} active</span>
-          </div>
-          <span style="font-weight:600;font-family:var(--mono);">${fmt(b.monthRev)}</span>
-        </div>
-        <div style="display:flex;gap:6px;height:24px;align-items:center;">
-          <div style="flex:1;position:relative;background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-            <div style="height:100%;background:${color};width:${revWidth}%;opacity:0.7;transition:width 0.3s;"></div>
-            <div style="position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;padding:0 6px;font-family:var(--mono);font-size:9px;color:var(--text);">
-              ${revWidth > 30 ? fmt(b.monthRev) : ''}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  });
-  
-  html += `</div>`;
-  container.innerHTML = html;
-}
-
 function renderBDHealth() {
   // Determine default month = last filled
   const totals = getMonthlyTotals();
@@ -2744,7 +2666,6 @@ function renderBDHealth() {
   renderActivityGrid(month);
   renderOnboardedDocsList(month);
   renderActivityAnalysis(month);
-  renderBDPerformanceChart(month);
 
   const bds = Object.keys(BD_COLORS);
 
@@ -3172,8 +3093,8 @@ function renderActivityAnalysis(month) {
   canvas.innerHTML = bdStats.map((b, i) => {
     if (b.visits === 0 && b.monthRev === 0) return ''; // skip inactive BDs
     // Pad slightly inside the canvas
-    const x = 10 + (b.visits / maxVisits) * 78;
-    const y = 10 + (1 - b.monthRev / maxRev) * 78;
+    const x = 6 + (b.visits / maxVisits) * 88;
+    const y = 6 + (1 - b.monthRev / maxRev) * 88;
     const color = BD_COLORS[b.bd]?.hex || '#888';
     const init = b.bd.split(' ')[0].slice(0, 2).toUpperCase();
     return `<div class="quadrant-dot" style="left:${x}%;top:${y}%;background:${color};" title="${b.bd}: ${b.visits} visits · ${fmt(b.monthRev)} revenue · ${fmt(b.revPerVisit)}/visit">${init}</div>`;
