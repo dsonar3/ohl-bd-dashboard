@@ -225,6 +225,9 @@
     border-radius: 10px;
     overflow: hidden;
   }
+  .card.allow-overflow {
+    overflow: visible;
+  }
   .card-header {
     padding: 16px 20px;
     border-bottom: 1px solid var(--border);
@@ -464,6 +467,214 @@
     gap: 8px;
   }
 
+  /* ACTION ITEMS CALLOUT */
+  .action-callout {
+    background: linear-gradient(135deg, rgba(0,212,170,0.06), rgba(129,140,248,0.06));
+    border: 1px solid var(--border-bright);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .action-callout::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+  }
+  .action-callout-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .action-list { display: flex; flex-direction: column; gap: 8px; }
+  .action-item {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .action-item:hover { border-color: var(--accent); transform: translateX(2px); }
+  .action-icon { font-size: 16px; line-height: 1; }
+  .action-text { font-size: 13px; color: var(--text); line-height: 1.4; }
+  .action-text strong { color: var(--accent); }
+  .action-text .sub { color: var(--muted); font-size: 11px; font-family: var(--mono); }
+  .action-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .tag-urgent { background: rgba(244,63,94,0.15); color: var(--red); }
+  .tag-warn   { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .tag-go     { background: rgba(16,185,129,0.15); color: var(--green); }
+
+  /* STRONGER ACTIVE TAB */
+  .nav-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: rgba(0,212,170,0.04);
+  }
+
+  /* STATUS LABEL BADGES (text + color) */
+  .status-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .status-healthy { background: rgba(16,185,129,0.12); color: var(--green); }
+  .status-low     { background: rgba(251,191,36,0.12); color: var(--yellow); }
+  .status-zero    { background: rgba(244,63,94,0.12); color: var(--red); }
+  .status-na      { background: rgba(100,116,139,0.10); color: var(--muted); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .empty-state .emoji { font-size: 32px; margin-bottom: 12px; display: block; }
+  .empty-state .label { color: var(--text); font-size: 14px; margin-bottom: 4px; }
+  .empty-state .hint  { font-size: 11px; color: var(--muted); }
+
+  /* ACTIVITY ANALYTICS */
+  .activity-stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .activity-stat {
+    background: var(--faint);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .activity-stat-label { font-family: var(--mono); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .activity-stat-val { font-family: var(--mono); font-size: 18px; color: var(--text); }
+  .activity-stat-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .quadrant-wrap {
+    position: relative;
+    background: var(--faint);
+    border-radius: 8px;
+    padding: 16px 16px 28px 32px;
+    height: 300px;
+    border: 1px solid var(--border);
+    overflow: visible;
+  }
+  .quadrant-canvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent 0%, transparent 50%, var(--border) 50%, var(--border) 50.5%, transparent 50.5%, transparent 100%),
+                linear-gradient(to bottom, var(--border) 49.5%, var(--border) 50%, transparent 50%, transparent 100%);
+  }
+  .quadrant-axis-label {
+    position: absolute;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .quadrant-axis-x { 
+    bottom: 2px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    white-space: nowrap;
+  }
+  .quadrant-axis-y { 
+    left: 2px; 
+    top: 50%; 
+    transform: translateY(-50%) rotate(-90deg); 
+    transform-origin: center;
+    white-space: nowrap;
+  }
+  .quadrant-quad-label {
+    position: absolute;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 6px;
+    background: var(--card);
+    border-radius: 4px;
+  }
+  .q-label-star   { top: 8px; right: 8px;  color: var(--green); }
+  .q-label-eff    { top: 8px; left: 8px;   color: var(--accent3); }
+  .q-label-busy   { bottom: 8px; right: 8px; color: var(--yellow); }
+  .q-label-risk   { bottom: 8px; left: 8px; color: var(--red); }
+  .quadrant-dot {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--bg);
+    cursor: pointer;
+    transition: transform 0.15s;
+    box-shadow: 0 0 0 2px var(--card), 0 0 0 3px var(--border-bright);
+  }
+  .quadrant-dot:hover { transform: translate(-50%, -50%) scale(1.15); z-index: 10; }
+  .leaderboard-table { width: 100%; border-collapse: collapse; }
+  .leaderboard-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .leaderboard-table td {
+    padding: 8px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .leaderboard-table tr:last-child td { border-bottom: none; }
+  .leaderboard-rank {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    width: 24px;
+  }
+  .leaderboard-rank.top { color: var(--green); font-weight: 600; }
+  .eff-good { color: var(--green); font-family: var(--mono); font-size: 12px; font-weight: 500; }
+  .eff-mid  { color: var(--yellow); font-family: var(--mono); font-size: 12px; }
+  .eff-bad  { color: var(--red); font-family: var(--mono); font-size: 12px; }
+
   /* MINI STAT */
   .mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .mini-stat {
@@ -692,14 +903,20 @@
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
     .grid-2, .grid-3 { grid-template-columns: 1fr; }
     .header { padding: 0 16px; }
-    .nav { padding: 0 16px; }
+    .nav { padding: 0 16px; overflow-x: auto; }
+    .nav-tab { white-space: nowrap; }
+    .search-input { width: 100%; margin-left: 0; margin-top: 8px; }
+    .filter-bar { flex-direction: column; align-items: stretch; }
+    .action-item { grid-template-columns: 24px 1fr auto; padding: 8px 10px; }
+    .action-text { font-size: 12px; }
+    #healthTeamStrip { grid-template-columns: repeat(2, 1fr) !important; }
   }
 </style>
 </head>
 <body>
 
 <!-- GLOBAL LOADER -->
-<div id="globalLoader" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+<div id="globalLoader" style="display: none; position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.75); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 12px;">
   <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;"></div>
   <div id="loaderMsg" style="font-family:var(--mono);font-size:13px;color:var(--accent);">Connecting to database...</div>
 </div>
@@ -750,6 +967,12 @@
   <!-- OVERVIEW SECTION -->
   <div class="section active" id="overview">
 
+    <!-- WHAT TO DO TODAY — Action Callout -->
+    <div class="action-callout">
+      <div class="action-callout-title">⚡ What to do today <span id="actionDate" style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;"></span></div>
+      <div class="action-list" id="actionList"></div>
+    </div>
+
     <!-- KPI CARDS -->
     <div class="kpi-grid">
       <div class="kpi-card" style="--accent-color: var(--accent)">
@@ -768,13 +991,13 @@
         <div class="kpi-label">May Revenue</div>
         <div class="kpi-value" id="kpiMay">₹1.9L</div>
         <div class="kpi-sub" id="kpiMayActive">30/48 active</div>
-        <span class="kpi-badge badge-up" id="kpiMayTrend">↑22.3% vs Apr</span>
+        <span class="kpi-badge badge-up" id="kpiMayTrend">↑21.9% vs Apr</span>
       </div>
       <div class="kpi-card" style="--accent-color: var(--accent3)">
         <div class="kpi-label">Top BD</div>
         <div class="kpi-value" style="font-size:16px;" id="kpiTopBD">Raza</div>
-        <div class="kpi-sub" id="kpiTopBDSub">₹4.6L total</div>
-        <span class="kpi-badge badge-up" id="kpiTopBDShare">59% of team</span>
+        <div class="kpi-sub" id="kpiTopBDSub">₹4.3L total</div>
+        <span class="kpi-badge badge-up" id="kpiTopBDShare">56% of team</span>
       </div>
       <div class="kpi-card" style="--accent-color: var(--accent4)">
         <div class="kpi-label">At-Risk Doctors</div>
@@ -794,8 +1017,8 @@
           <div class="month-selector" id="chartMonthBtns"></div>
         </div>
         <div class="chart-wrap">
-          <div class="bar-chart" id="barChart"><div class="bar-group"><div class="bar bar-active" data-val="₹88,104" style="height: 45.2488%;"></div></div><div class="bar-group"><div class="bar bar-active" data-val="₹1,50,457" style="height: 77.2724%;"></div></div><div class="bar-group"><div class="bar bar-active" data-val="₹1,94,710" style="height: 100%;"></div></div><div class="bar-group"><div class="bar bar-active" data-val="₹1,57,742" style="height: 81.0138%;"></div></div><div class="bar-group"><div class="bar bar-active" data-val="₹1,92,899" style="height: 99.0699%;"></div></div><div class="bar-group"><div class="bar bar-inactive" data-val="—" style="height: 0%;"></div></div><div class="bar-group"><div class="bar bar-inactive" data-val="—" style="height: 0%;"></div></div><div class="bar-group"><div class="bar bar-inactive" data-val="—" style="height: 0%;"></div></div><div class="bar-group"><div class="bar bar-inactive" data-val="—" style="height: 0%;"></div></div><div class="bar-group"><div class="bar bar-inactive" data-val="—" style="height: 0%;"></div></div><div class="bar-group"><div class="bar bar-inactive" data-val="—" style="height: 0%;"></div></div><div class="bar-group"><div class="bar bar-inactive" data-val="—" style="height: 0%;"></div></div></div>
-          <div style="display:flex; gap:6px; margin-top:12px;" id="barLabels"><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Jan</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Feb</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Mar</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Apr</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">May</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Jun</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Jul</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Aug</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Sep</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Oct</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Nov</div><div class="bar-label" style="flex: 1 1 0%; text-align: center; font-size: 9px;">Dec</div></div>
+          <div class="bar-chart" id="barChart"></div>
+          <div style="display:flex; gap:6px; margin-top:12px;" id="barLabels"></div>
         </div>
         <div class="card-body" style="padding-top:0; border-top: 1px solid var(--border); margin-top:8px;">
           <div style="display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--muted);">
@@ -814,49 +1037,9 @@
         <div class="card-body" style="padding:0;">
           <table class="bd-table" id="bdTable">
             <thead>
-              <tr>
-                <th>BD Name</th>
-                <th>Docs</th>
-                <th>Jan</th>
-                <th>Feb</th>
-                <th>Mar</th>
-                <th>Apr</th>
-                <th>May</th>
-                <th>Total ₹</th>
-                <th>Share</th>
-              </tr>
+              <tr><th>BD Name</th><th>Docs</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Trend</th><th>Total ₹</th><th>Share</th></tr>
             </thead>
-            <tbody id="bdTableBody"><tr>
-      <td class="bd-name"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#00d4aa;margin-right:8px;"></span>Raza Shaikh</td>
-      <td class="mono-val">17</td>
-      <td class="mono-val rev-pos">₹38.5K</td><td class="mono-val rev-pos">₹86.2K</td><td class="mono-val rev-pos">₹1.1L</td><td class="mono-val rev-pos">₹91.2K</td><td class="mono-val rev-pos">₹1.3L</td>
-      <td class="mono-val" style="color:var(--text);font-weight:500;">₹4.6L</td>
-      <td><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">59%</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:59%;background:#00d4aa;"></div></div></td></tr><tr>
-      <td class="bd-name"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f97316;margin-right:8px;"></span>Swaraaj Kane</td>
-      <td class="mono-val">11</td>
-      <td class="mono-val rev-pos">₹13.9K</td><td class="mono-val rev-pos">₹28.4K</td><td class="mono-val rev-pos">₹27.4K</td><td class="mono-val rev-pos">₹16.1K</td><td class="mono-val rev-pos">₹19.0K</td>
-      <td class="mono-val" style="color:var(--text);font-weight:500;">₹1.0L</td>
-      <td><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">13%</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:13%;background:#f97316;"></div></div></td></tr><tr>
-      <td class="bd-name"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#818cf8;margin-right:8px;"></span>Abhijeet Deotale</td>
-      <td class="mono-val">11</td>
-      <td class="mono-val rev-pos">₹9.7K</td><td class="mono-val rev-pos">₹18.6K</td><td class="mono-val rev-pos">₹18.4K</td><td class="mono-val rev-pos">₹28.2K</td><td class="mono-val rev-pos">₹28.7K</td>
-      <td class="mono-val" style="color:var(--text);font-weight:500;">₹1.0L</td>
-      <td><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">13%</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:13%;background:#818cf8;"></div></div></td></tr><tr>
-      <td class="bd-name"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fb7185;margin-right:8px;"></span>Vikas Patil</td>
-      <td class="mono-val">7</td>
-      <td class="mono-val rev-pos">₹16.4K</td><td class="mono-val rev-pos">₹16.0K</td><td class="mono-val rev-pos">₹30.0K</td><td class="mono-val rev-pos">₹18.9K</td><td class="mono-val rev-pos">₹13.4K</td>
-      <td class="mono-val" style="color:var(--text);font-weight:500;">₹94.6K</td>
-      <td><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">12%</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:12%;background:#fb7185;"></div></div></td></tr><tr>
-      <td class="bd-name"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#facc15;margin-right:8px;"></span>Shahbaaz</td>
-      <td class="mono-val">2</td>
-      <td class="mono-val rev-pos">₹9.5K</td><td class="mono-val rev-pos">₹1.3K</td><td class="mono-val rev-pos">₹5.0K</td><td class="mono-val rev-pos">₹3.3K</td><td class="mono-val rev-zero">—</td>
-      <td class="mono-val" style="color:var(--text);font-weight:500;">₹19.2K</td>
-      <td><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">2%</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:2%;background:#facc15;"></div></div></td></tr></tbody>
+            <tbody id="bdTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -871,38 +1054,9 @@
         <div class="cohort-grid">
           <table class="cohort-table" id="cohortTable">
             <thead>
-              <tr>
-                <th>Cohort</th><th>#</th>
-                <th>M+1</th><th>M+2</th><th>M+3</th><th>M+4</th><th>M+5</th>
-                <th>M2/M1</th><th>M3/M1</th>
-              </tr>
+              <tr><th>Cohort</th><th>#</th><th>M+1</th><th>M+2</th><th>M+3</th><th>M+4</th><th title="M+2 revenue as % of M+1 revenue">Rev M2/M1</th><th title="M+3 revenue as % of M+1 revenue">Rev M3/M1</th></tr>
             </thead>
-            <tbody id="cohortBody"><tr>
-      <td style="font-weight:500;">Jan</td>
-      <td style="font-family:var(--mono);color:var(--muted);">12</td>
-      <td class="ct-green">₹88.1K</td><td class="ct-green">₹92.7K</td><td class="ct-green">₹81.6K</td><td class="ct-green">₹44.3K</td><td class="ct-green">₹49.8K</td>
-      <td style="font-family:var(--mono);color:var(--green);">105%</td>
-      <td style="font-family:var(--mono);color:var(--green);">93%</td></tr><tr>
-      <td style="font-weight:500;">Feb</td>
-      <td style="font-family:var(--mono);color:var(--muted);">11</td>
-      <td class="ct-green">₹57.8K</td><td class="ct-green">₹43.0K</td><td class="ct-green">₹34.2K</td><td class="ct-green">₹12.7K</td><td class="ct-blank">₹0</td>
-      <td style="font-family:var(--mono);color:var(--yellow);">74%</td>
-      <td style="font-family:var(--mono);color:var(--green);">59%</td></tr><tr>
-      <td style="font-weight:500;">Mar</td>
-      <td style="font-family:var(--mono);color:var(--muted);">11</td>
-      <td class="ct-green">₹70.1K</td><td class="ct-green">₹61.7K</td><td class="ct-green">₹30.2K</td><td class="ct-blank">₹0</td><td class="ct-blank">₹0</td>
-      <td style="font-family:var(--mono);color:var(--green);">88%</td>
-      <td style="font-family:var(--mono);color:var(--yellow);">43%</td></tr><tr>
-      <td style="font-weight:500;">Apr</td>
-      <td style="font-family:var(--mono);color:var(--muted);">5</td>
-      <td class="ct-green">₹17.5K</td><td class="ct-green">₹34.0K</td><td class="ct-blank">₹0</td><td class="ct-blank">₹0</td><td class="ct-blank">₹0</td>
-      <td style="font-family:var(--mono);color:var(--green);">194%</td>
-      <td style="font-family:var(--mono);color:var(--red);">0%</td></tr><tr>
-      <td style="font-weight:500;">May</td>
-      <td style="font-family:var(--mono);color:var(--muted);">9</td>
-      <td class="ct-green">₹66.2K</td><td class="ct-blank">₹0</td><td class="ct-blank">₹0</td><td class="ct-blank">₹0</td><td class="ct-blank">₹0</td>
-      <td style="font-family:var(--mono);color:var(--red);">0%</td>
-      <td style="font-family:var(--mono);color:var(--red);">0%</td></tr></tbody>
+            <tbody id="cohortBody"></tbody>
           </table>
         </div>
       </div>
@@ -912,12 +1066,12 @@
           <div class="card-title">Onboarding Velocity</div>
         </div>
         <div class="card-body">
-          <div id="onboardingChart" class="bar-chart" style="height:120px; margin-bottom:12px;"><div class="bar-group"><div class="bar" data-val="12 doctors" style="height: 100%; background: var(--accent3);"></div></div><div class="bar-group"><div class="bar" data-val="11 doctors" style="height: 91.6667%; background: var(--accent3);"></div></div><div class="bar-group"><div class="bar" data-val="11 doctors" style="height: 91.6667%; background: var(--accent3);"></div></div><div class="bar-group"><div class="bar" data-val="5 doctors" style="height: 41.6667%; background: var(--accent3);"></div></div><div class="bar-group"><div class="bar" data-val="9 doctors" style="height: 75%; background: var(--accent3);"></div></div></div>
-          <div style="display:flex; gap:6px; margin-bottom:16px;" id="onboardLabels"><div style="flex: 1 1 0%; text-align: center; font-family: var(--mono); font-size: 9px; color: var(--muted);">Jan (12)</div><div style="flex: 1 1 0%; text-align: center; font-family: var(--mono); font-size: 9px; color: var(--muted);">Feb (11)</div><div style="flex: 1 1 0%; text-align: center; font-family: var(--mono); font-size: 9px; color: var(--muted);">Mar (11)</div><div style="flex: 1 1 0%; text-align: center; font-family: var(--mono); font-size: 9px; color: var(--muted);">Apr (5)</div><div style="flex: 1 1 0%; text-align: center; font-family: var(--mono); font-size: 9px; color: var(--muted);">May (9)</div></div>
+          <div id="onboardingChart" class="bar-chart" style="height:120px; margin-bottom:12px;"></div>
+          <div style="display:flex; gap:6px; margin-bottom:16px;" id="onboardLabels"></div>
           <div class="mini-stats" id="miniStats">
             <div class="mini-stat">
               <div class="mini-stat-label">Avg Rev / Doc</div>
-              <div class="mini-stat-val" id="avgRevDoc">₹16.3K</div>
+              <div class="mini-stat-val" id="avgRevDoc">₹16.2K</div>
             </div>
             <div class="mini-stat">
               <div class="mini-stat-label">Active This Month</div>
@@ -942,14 +1096,14 @@
   <div class="section" id="doctors">
     <div class="filter-bar">
       <button class="filter-btn active" onclick="filterBD('All', this)">All BDs</button>
-      <input type="text" class="search-input" placeholder="Search clinic..." id="clinicSearch" oninput="filterDoctors()">
+      <button class="filter-btn" data-bd="Raza Shaikh">Raza Shaikh</button><button class="filter-btn" data-bd="Swaraaj Kane">Swaraaj Kane</button><button class="filter-btn" data-bd="Abhijeet Deotale">Abhijeet Deotale</button><button class="filter-btn" data-bd="Vikas Patil">Vikas Patil</button><button class="filter-btn" data-bd="Shahbaaz">Shahbaaz</button><input type="text" class="search-input" placeholder="Search clinic..." id="clinicSearch" oninput="filterDoctors()">
     </div>
     <!-- COHORT CROSS-FILTER -->
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:10px 0;border-bottom:1px solid var(--border);">
       <span style="font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Onboarded in:</span>
-      <div id="cohortFilterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+      <div id="cohortFilterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"><button class="msel-btn">Jan</button><button class="msel-btn">Feb</button><button class="msel-btn">Mar</button><button class="msel-btn">Apr</button><button class="msel-btn">May</button></div>
       <span style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:8px;text-transform:uppercase;letter-spacing:0.06em;">Revenue in:</span>
-      <div id="revMonthFilterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+      <div id="revMonthFilterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"><button class="msel-btn">Jan</button><button class="msel-btn">Feb</button><button class="msel-btn">Mar</button><button class="msel-btn">Apr</button><button class="msel-btn">May</button></div>
       <button onclick="clearCohortFilter()" style="font-family:var(--mono);font-size:10px;color:var(--red);background:none;border:1px solid var(--red);border-radius:4px;padding:3px 8px;cursor:pointer;margin-left:4px;">✕ Clear</button>
       <span id="cohortFilterSummary" style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-left:8px;"></span>
     </div>
@@ -961,402 +1115,9 @@
       <div class="doc-scroll">
         <table class="doc-table">
           <thead>
-            <tr>
-              <th>#</th>
-              <th>Partner ID</th>
-              <th>Clinic / Doctor</th>
-              <th>BD</th>
-              <th>Onboard</th>
-              <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th>
-              <th>Total ₹</th>
-              <th>Trend</th>
-            </tr>
+            <tr><th>#</th><th>Partner ID</th><th>Clinic / Doctor</th><th>BD</th><th>Onboard</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th><th>Trend</th></tr>
           </thead>
-          <tbody id="docTableBody"><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">1</td>
-      <td style="font-family:var(--mono);font-size:12px;">9860</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Derma Pro Centre">Derma Pro Centre</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹7.3K</td><td class="rev-cell rev-pos">₹1.7K</td><td class="rev-cell rev-pos">₹3.9K</td><td class="rev-cell rev-pos">₹2.7K</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹15.5K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">2</td>
-      <td style="font-family:var(--mono);font-size:12px;">9694</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Maheshwari">Maheshwari</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹5.2K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹5.2K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">3</td>
-      <td style="font-family:var(--mono);font-size:12px;">9751</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr Gangwani's Vascular Clinic">Dr Gangwani's Vascular Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹23.6K</td><td class="rev-cell rev-pos">₹59.1K</td><td class="rev-cell rev-pos">₹61.2K</td><td class="rev-cell rev-pos">₹28.5K</td><td class="rev-cell rev-pos">₹36.2K</td>
-      <td class="mono-val" style="font-weight:500;">₹2.1L</td>
-      <td><span class="trend-up">↑ Growing</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">4</td>
-      <td style="font-family:var(--mono);font-size:12px;">9731</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="The Luxe clinic">The Luxe clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹6.3K</td><td class="rev-cell rev-pos">₹9.3K</td><td class="rev-cell rev-pos">₹5.6K</td><td class="rev-cell rev-pos">₹2.6K</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹23.9K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">5</td>
-      <td style="font-family:var(--mono);font-size:12px;">9150</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Fauziya Hospital">Fauziya Hospital</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹8.5K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹8.5K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">6</td>
-      <td style="font-family:var(--mono);font-size:12px;">10041</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr. Abdullah">Dr. Abdullah</td>
-      <td><span class="pill pill-shahbaaz">Shahbaaz</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹6.5K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-pos">₹436</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹6.9K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">7</td>
-      <td style="font-family:var(--mono);font-size:12px;">9662</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Aarogyam Clinic">Aarogyam Clinic</td>
-      <td><span class="pill pill-shahbaaz">Shahbaaz</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹3.1K</td><td class="rev-cell rev-pos">₹1.3K</td><td class="rev-cell rev-pos">₹4.6K</td><td class="rev-cell rev-pos">₹3.3K</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹12.3K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">8</td>
-      <td style="font-family:var(--mono);font-size:12px;">10038</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Prakriti Advanced Homeopathic Clinic">Prakriti Advanced Homeopathic Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹4.1K</td><td class="rev-cell rev-pos">₹383</td><td class="rev-cell rev-pos">₹2.7K</td><td class="rev-cell rev-pos">₹7.0K</td><td class="rev-cell rev-pos">₹5.4K</td>
-      <td class="mono-val" style="font-weight:500;">₹19.5K</td>
-      <td><span class="trend-down">↓ Declining</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">9</td>
-      <td style="font-family:var(--mono);font-size:12px;">9970</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dermavenue Aesthetic Clinic">Dermavenue Aesthetic Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹3.6K</td><td class="rev-cell rev-pos">₹12.3K</td><td class="rev-cell rev-pos">₹3.2K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹19.0K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">10</td>
-      <td style="font-family:var(--mono);font-size:12px;">9110</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Skinsoul Clinic">Skinsoul Clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹7.6K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-pos">₹1.4K</td>
-      <td class="mono-val" style="font-weight:500;">₹9.0K</td>
-      <td><span class="trend-up">↑ New</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">11</td>
-      <td style="font-family:var(--mono);font-size:12px;">10027</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="The Potent Homeopathic Clinic">The Potent Homeopathic Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹9.7K</td><td class="rev-cell rev-pos">₹6.5K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-pos">₹6.9K</td>
-      <td class="mono-val" style="font-weight:500;">₹23.1K</td>
-      <td><span class="trend-up">↑ New</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">12</td>
-      <td style="font-family:var(--mono);font-size:12px;">4613</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Akshay Clinic">Akshay Clinic</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="rev-cell rev-pos">₹2.6K</td><td class="rev-cell rev-pos">₹2.1K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-pos">₹117</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹4.9K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">13</td>
-      <td style="font-family:var(--mono);font-size:12px;">10037</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr. Savla's Homeopathy Clinic">Dr. Savla's Homeopathy Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹5.7K</td><td class="rev-cell rev-pos">₹3.8K</td><td class="rev-cell rev-pos">₹2.8K</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹12.4K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">14</td>
-      <td style="font-family:var(--mono);font-size:12px;">10076</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr.niriksha gala">Dr.niriksha gala</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹1.1K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-pos">₹2.9K</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹4.0K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">15</td>
-      <td style="font-family:var(--mono);font-size:12px;">10322</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr. Varun Deodhar Clinic">Dr. Varun Deodhar Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹1.8K</td><td class="rev-cell rev-pos">₹8.7K</td><td class="rev-cell rev-pos">₹15.1K</td><td class="rev-cell rev-pos">₹4.0K</td>
-      <td class="mono-val" style="font-weight:500;">₹29.6K</td>
-      <td><span class="trend-down">↓ Declining</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">16</td>
-      <td style="font-family:var(--mono);font-size:12px;">10221</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Maitreyi Clinic">Maitreyi Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹1.5K</td><td class="rev-cell rev-pos">₹1.0K</td><td class="rev-cell rev-pos">₹1.5K</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹4.0K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">17</td>
-      <td style="font-family:var(--mono);font-size:12px;">10325</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr S Avhad Clinic">Dr S Avhad Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹2.8K</td><td class="rev-cell rev-pos">₹3.8K</td><td class="rev-cell rev-pos">₹2.6K</td><td class="rev-cell rev-pos">₹2.7K</td>
-      <td class="mono-val" style="font-weight:500;">₹11.9K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">18</td>
-      <td style="font-family:var(--mono);font-size:12px;">9617</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr Khans Healthcare clinic">Dr Khans Healthcare clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹3.4K</td><td class="rev-cell rev-pos">₹1.3K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹4.7K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">19</td>
-      <td style="font-family:var(--mono);font-size:12px;">10250</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr Kiran's Homeopathic Clinic">Dr Kiran's Homeopathic Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹8.8K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹8.8K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">20</td>
-      <td style="font-family:var(--mono);font-size:12px;">10233</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr.Pallavi Sule's SKIN HAIR AESTHETIC CLINIC">Dr.Pallavi Sule's SKIN HAIR AESTHETIC CLINIC</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹13.8K</td><td class="rev-cell rev-pos">₹21.0K</td><td class="rev-cell rev-pos">₹9.2K</td><td class="rev-cell rev-pos">₹3.9K</td>
-      <td class="mono-val" style="font-weight:500;">₹48.0K</td>
-      <td><span class="trend-down">↓ Declining</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">21</td>
-      <td style="font-family:var(--mono);font-size:12px;">10249</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Shrivishwadev Clinic">Shrivishwadev Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹3.2K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹3.2K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">22</td>
-      <td style="font-family:var(--mono);font-size:12px;">10275</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr Mayuri's Wellness clinic">Dr Mayuri's Wellness clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹10.6K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-pos">₹799</td>
-      <td class="mono-val" style="font-weight:500;">₹11.4K</td>
-      <td><span class="trend-up">↑ New</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">23</td>
-      <td style="font-family:var(--mono);font-size:12px;">10199</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr Ganesh R Nair's Clinic">Dr Ganesh R Nair's Clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹5.1K</td><td class="rev-cell rev-pos">₹3.4K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-pos">₹1.3K</td>
-      <td class="mono-val" style="font-weight:500;">₹9.8K</td>
-      <td><span class="trend-up">↑ New</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">24</td>
-      <td style="font-family:var(--mono);font-size:12px;">10284</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Shree Krishna Clinic">Shree Krishna Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹18.0K</td><td class="rev-cell rev-pos">₹6.1K</td><td class="rev-cell rev-pos">₹6.5K</td>
-      <td class="mono-val" style="font-weight:500;">₹30.6K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">25</td>
-      <td style="font-family:var(--mono);font-size:12px;">10540</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="The Healing Space Homeopathy">The Healing Space Homeopathy</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹6.4K</td><td class="rev-cell rev-pos">₹7.9K</td><td class="rev-cell rev-pos">₹7.8K</td>
-      <td class="mono-val" style="font-weight:500;">₹22.2K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">26</td>
-      <td style="font-family:var(--mono);font-size:12px;">10189</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr. Chhabildas Sanghvi Eye Hospital">Dr. Chhabildas Sanghvi Eye Hospital</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹3.7K</td><td class="rev-cell rev-pos">₹1.4K</td><td class="rev-cell rev-pos">₹514</td>
-      <td class="mono-val" style="font-weight:500;">₹5.7K</td>
-      <td><span class="trend-down">↓ Declining</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">27</td>
-      <td style="font-family:var(--mono);font-size:12px;">10580</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr Ashish Shah">Dr Ashish Shah</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹3.8K</td><td class="rev-cell rev-pos">₹5.1K</td><td class="rev-cell rev-pos">₹6.5K</td>
-      <td class="mono-val" style="font-weight:500;">₹15.4K</td>
-      <td><span class="trend-up">↑ Growing</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">28</td>
-      <td style="font-family:var(--mono);font-size:12px;">10595</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Hayat Clinic">Hayat Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹7.1K</td><td class="rev-cell rev-pos">₹20.8K</td><td class="rev-cell rev-pos">₹4.5K</td>
-      <td class="mono-val" style="font-weight:500;">₹32.4K</td>
-      <td><span class="trend-down">↓ Declining</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">29</td>
-      <td style="font-family:var(--mono);font-size:12px;">10114</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Sushrusha Clinic Kharghar">Sushrusha Clinic Kharghar</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹11.8K</td><td class="rev-cell rev-pos">₹6.3K</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹18.1K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">30</td>
-      <td style="font-family:var(--mono);font-size:12px;">10273</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr Jyoti's Aesthetic Clinic">Dr Jyoti's Aesthetic Clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹5.4K</td><td class="rev-cell rev-pos">₹2.6K</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹8.0K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">31</td>
-      <td style="font-family:var(--mono);font-size:12px;">10200</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Netra Aroghyam Clinic">Netra Aroghyam Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹1.8K</td><td class="rev-cell rev-pos">₹2.6K</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹4.4K</td>
-      <td><span class="trend-down">↓ Dropped</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">32</td>
-      <td style="font-family:var(--mono);font-size:12px;">10503</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Nu-Life Homoeopathy">Nu-Life Homoeopathy</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹1.5K</td><td class="rev-cell rev-pos">₹3.7K</td><td class="rev-cell rev-pos">₹3.1K</td>
-      <td class="mono-val" style="font-weight:500;">₹8.4K</td>
-      <td><span class="trend-down">↓ Declining</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">33</td>
-      <td style="font-family:var(--mono);font-size:12px;">10608</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="NLH - Dr. Megha Jodhavat">NLH - Dr. Megha Jodhavat</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹1.6K</td><td class="rev-cell rev-zero">₹0</td><td class="rev-cell rev-zero">₹0</td>
-      <td class="mono-val" style="font-weight:500;">₹1.6K</td>
-      <td><span class="trend-flat">→ Stable</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">34</td>
-      <td style="font-family:var(--mono);font-size:12px;">9961</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="SHREERAM CLINIC">SHREERAM CLINIC</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹9.0K</td><td class="rev-cell rev-pos">₹5.1K</td><td class="rev-cell rev-pos">₹1.3K</td>
-      <td class="mono-val" style="font-weight:500;">₹15.3K</td>
-      <td><span class="trend-down">↓ Declining</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">35</td>
-      <td style="font-family:var(--mono);font-size:12px;">10719</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Insight Diagnostic Centre">Insight Diagnostic Centre</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹3.3K</td><td class="rev-cell rev-pos">₹6.9K</td>
-      <td class="mono-val" style="font-weight:500;">₹10.1K</td>
-      <td><span class="trend-up">↑ Growing</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">36</td>
-      <td style="font-family:var(--mono);font-size:12px;">10671</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr.Sachit S Kapoor Healing Willow Homeopathic Health Centre">Dr.Sachit S Kapoor Healing Willow Homeopathic Health Centre</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹2.4K</td><td class="rev-cell rev-pos">₹6.2K</td>
-      <td class="mono-val" style="font-weight:500;">₹8.6K</td>
-      <td><span class="trend-up">↑ Growing</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">37</td>
-      <td style="font-family:var(--mono);font-size:12px;">9933</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Homeo clinic">Homeo clinic</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹4.4K</td><td class="rev-cell rev-pos">₹2.2K</td>
-      <td class="mono-val" style="font-weight:500;">₹6.6K</td>
-      <td><span class="trend-down">↓ Declining</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">38</td>
-      <td style="font-family:var(--mono);font-size:12px;">10259</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Nirmin Superspeciality Clinic">Nirmin Superspeciality Clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹4.6K</td><td class="rev-cell rev-pos">₹1.2K</td>
-      <td class="mono-val" style="font-weight:500;">₹5.7K</td>
-      <td><span class="trend-down">↓ Declining</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">39</td>
-      <td style="font-family:var(--mono);font-size:12px;">10654</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="MOH Clinics">MOH Clinics</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹2.8K</td><td class="rev-cell rev-pos">₹17.6K</td>
-      <td class="mono-val" style="font-weight:500;">₹20.4K</td>
-      <td><span class="trend-up">↑ Growing</span></td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">40</td>
-      <td style="font-family:var(--mono);font-size:12px;">9881</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr Haresh K.Jumani Clinic">Dr Haresh K.Jumani Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">May</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹22.2K</td>
-      <td class="mono-val" style="font-weight:500;">₹22.2K</td>
-      <td>—</td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">41</td>
-      <td style="font-family:var(--mono);font-size:12px;">10827</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Danbelion Homeopathy Clinic">Danbelion Homeopathy Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">May</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹7.2K</td>
-      <td class="mono-val" style="font-weight:500;">₹7.2K</td>
-      <td>—</td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">42</td>
-      <td style="font-family:var(--mono);font-size:12px;">10777</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Shri Bajirao Salwe Memorial Clinic">Shri Bajirao Salwe Memorial Clinic</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">May</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹6.0K</td>
-      <td class="mono-val" style="font-weight:500;">₹6.0K</td>
-      <td>—</td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">43</td>
-      <td style="font-family:var(--mono);font-size:12px;">10133</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr Vineet Kini's Surgical Clinic">Dr Vineet Kini's Surgical Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">May</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹9.2K</td>
-      <td class="mono-val" style="font-weight:500;">₹9.2K</td>
-      <td>—</td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">44</td>
-      <td style="font-family:var(--mono);font-size:12px;">9509</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Get Well Polyclinic">Get Well Polyclinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">May</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹9.4K</td>
-      <td class="mono-val" style="font-weight:500;">₹9.4K</td>
-      <td>—</td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">45</td>
-      <td style="font-family:var(--mono);font-size:12px;">10735</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="K Skinique Clinic">K Skinique Clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">May</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹2.4K</td>
-      <td class="mono-val" style="font-weight:500;">₹2.4K</td>
-      <td>—</td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">46</td>
-      <td style="font-family:var(--mono);font-size:12px;">10726</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Riddhi Siddhi Ayurveda Clinic">Riddhi Siddhi Ayurveda Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">May</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹5.9K</td>
-      <td class="mono-val" style="font-weight:500;">₹5.9K</td>
-      <td>—</td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">47</td>
-      <td style="font-family:var(--mono);font-size:12px;">7125</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Dr.Tarun Rochllani">Dr.Tarun Rochllani</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">May</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹1.3K</td>
-      <td class="mono-val" style="font-weight:500;">₹1.3K</td>
-      <td>—</td></tr><tr>
-      <td style="font-family:var(--mono);color:var(--muted);">48</td>
-      <td style="font-family:var(--mono);font-size:12px;">10819</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Kalki Skin &amp; Hair Clinic Koparkhairane">Kalki Skin &amp; Hair Clinic Koparkhairane</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">May</td>
-      <td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-zero">—</td><td class="rev-cell rev-pos">₹2.5K</td>
-      <td class="mono-val" style="font-weight:500;">₹2.5K</td>
-      <td>—</td></tr></tbody>
+          <tbody id="docTableBody"></tbody>
         </table>
       </div>
     </div>
@@ -1365,7 +1126,7 @@
   <!-- COHORT SECTION -->
   <div class="section" id="cohort">
     <div class="alert-bar">
-      ⚠️ M+2 drop detected across all cohorts — 87% retention Jan, drops to 48% by M+3. Re-engagement campaigns needed.
+      ⚠️ M+2 revenue drop detected across all cohorts — Jan cohort's M+2 revenue is 87% of M+1, drops to 48% by M+3. This is a <strong>revenue ratio</strong>, not retention % — re-engagement campaigns recommended.
     </div>
     <div class="grid-2">
       <div class="card">
@@ -1376,7 +1137,7 @@
               <tr>
                 <th>Cohort</th><th>Count</th>
                 <th>M+1 (₹)</th><th>M+2 (₹)</th><th>M+3 (₹)</th><th>M+4 (₹)</th><th>M+5 (₹)</th>
-                <th>Ret M2</th><th>Ret M3</th>
+                <th title="M+2 revenue as % of M+1">Rev M2</th><th title="M+3 revenue as % of M+1">Rev M3</th>
               </tr>
             </thead>
             <tbody id="cohortDetailBody"></tbody>
@@ -1424,169 +1185,7 @@
               <th>Consecutive ₹0</th>
             </tr>
           </thead>
-          <tbody id="atRiskBody"><tr>
-      <td style="font-size:13px;">🔴 High</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="The Luxe clinic">The Luxe clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="mono-val rev-pos">₹9.3K</td>
-      <td class="mono-val">₹23.9K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">🔴 High</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Dermavenue Aesthetic Clinic">Dermavenue Aesthetic Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="mono-val rev-pos">₹12.3K</td>
-      <td class="mono-val">₹19.0K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--red);">2 months</td></tr><tr>
-      <td style="font-size:13px;">🔴 High</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Sushrusha Clinic Kharghar">Sushrusha Clinic Kharghar</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="mono-val rev-pos">₹11.8K</td>
-      <td class="mono-val">₹18.1K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">🔴 High</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Derma Pro Centre">Derma Pro Centre</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="mono-val rev-pos">₹7.3K</td>
-      <td class="mono-val">₹15.5K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">🔴 High</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Dr. Savla's Homeopathy Clinic">Dr. Savla's Homeopathy Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="mono-val rev-pos">₹5.7K</td>
-      <td class="mono-val">₹12.4K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">🟡 Med</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Aarogyam Clinic">Aarogyam Clinic</td>
-      <td><span class="pill pill-shahbaaz">Shahbaaz</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="mono-val rev-pos">₹4.6K</td>
-      <td class="mono-val">₹12.3K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">🟡 Med</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Dr Kiran's Homeopathic Clinic">Dr Kiran's Homeopathic Clinic</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="mono-val rev-pos">₹8.8K</td>
-      <td class="mono-val">₹8.8K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--red);">3 months</td></tr><tr>
-      <td style="font-size:13px;">🟡 Med</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Fauziya Hospital">Fauziya Hospital</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="mono-val rev-pos">₹8.5K</td>
-      <td class="mono-val">₹8.5K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--red);">4 months</td></tr><tr>
-      <td style="font-size:13px;">🟡 Med</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Dr Jyoti's Aesthetic Clinic">Dr Jyoti's Aesthetic Clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="mono-val rev-pos">₹5.4K</td>
-      <td class="mono-val">₹8.0K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">🟡 Med</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Dr. Abdullah">Dr. Abdullah</td>
-      <td><span class="pill pill-shahbaaz">Shahbaaz</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="mono-val rev-pos">₹6.5K</td>
-      <td class="mono-val">₹6.9K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--red);">2 months</td></tr><tr>
-      <td style="font-size:13px;">🟡 Med</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Maheshwari">Maheshwari</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="mono-val rev-pos">₹5.2K</td>
-      <td class="mono-val">₹5.2K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--red);">4 months</td></tr><tr>
-      <td style="font-size:13px;">🟡 Med</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Akshay Clinic">Akshay Clinic</td>
-      <td><span class="pill pill-vikas">Vikas</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Jan</td>
-      <td class="mono-val rev-pos">₹2.6K</td>
-      <td class="mono-val">₹4.9K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">⬜ Low</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Dr Khans Healthcare clinic">Dr Khans Healthcare clinic</td>
-      <td><span class="pill pill-swaraaj">Swaraaj</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="mono-val rev-pos">₹3.4K</td>
-      <td class="mono-val">₹4.7K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--red);">2 months</td></tr><tr>
-      <td style="font-size:13px;">⬜ Low</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Netra Aroghyam Clinic">Netra Aroghyam Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td class="mono-val rev-pos">₹2.6K</td>
-      <td class="mono-val">₹4.4K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">⬜ Low</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Maitreyi Clinic">Maitreyi Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td class="mono-val rev-pos">₹1.5K</td>
-      <td class="mono-val">₹4.0K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">⬜ Low</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Dr.niriksha gala">Dr.niriksha gala</td>
-      <td><span class="pill pill-raza">Raza</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Apr</td>
-      <td class="mono-val rev-pos">₹2.9K</td>
-      <td class="mono-val">₹4.0K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--yellow);">1 month</td></tr><tr>
-      <td style="font-size:13px;">⬜ Low</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="Shrivishwadev Clinic">Shrivishwadev Clinic</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Feb</td>
-      <td class="mono-val rev-pos">₹3.2K</td>
-      <td class="mono-val">₹3.2K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--red);">3 months</td></tr><tr>
-      <td style="font-size:13px;">⬜ Low</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;" title="NLH - Dr. Megha Jodhavat">NLH - Dr. Megha Jodhavat</td>
-      <td><span class="pill pill-abhijeet">Abhijeet</span></td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--muted);">Mar</td>
-      <td class="mono-val rev-pos">₹1.6K</td>
-      <td class="mono-val">₹1.6K</td>
-      <td style="font-family:var(--mono);font-size:12px;color:var(--red);">2 months</td></tr></tbody>
+          <tbody id="atRiskBody"></tbody>
         </table>
       </div>
     </div>
@@ -1619,7 +1218,37 @@
       </div>
     </div>
 
-    <!-- ONBOARDED DOCTORS THIS MONTH -->
+    <!-- ACTIVITY ANALYSIS — Quadrant + Efficiency Leaderboard -->
+    <div class="card allow-overflow" style="margin-bottom:20px;">
+      <div class="card-header">
+        <div class="card-title">📊 Activity Analytics — <span id="analysisMonthLabel">May 2025</span></div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);">Activity drives revenue — measure both</div>
+      </div>
+      <div style="padding:16px 20px;">
+        <!-- Stat strip -->
+        <div class="activity-stat-strip" id="activityStatStrip"></div>
+
+        <!-- Activity Analysis - Simple BD Performance Chart -->
+        <div class="grid-2" style="margin-bottom:0;">
+          <div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">BD Performance This Month</div>
+            <div id="bdPerformanceChart" style="background:var(--faint);border:1px solid var(--border);border-radius:8px;padding:16px;min-height:300px;">
+              <!-- Chart renders here -->
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Efficiency Leaderboard — ₹ per visit</div>
+            <div style="background:var(--faint);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+              <table class="leaderboard-table">
+                <thead><tr><th>#</th><th>BD</th><th>Visits</th><th>Regs</th><th>Conv</th><th>₹/Visit</th><th>₹/Reg</th></tr></thead>
+                <tbody id="leaderboardBody"></tbody>
+              </table>
+            </div>
+            <div id="efficiencyInsight" style="margin-top:10px;padding:10px 12px;background:rgba(129,140,248,0.06);border:1px solid rgba(129,140,248,0.2);border-radius:6px;font-size:12px;color:var(--text);line-height:1.5;"></div>
+          </div>
+        </div>
+
+<!-- ONBOARDED DOCTORS THIS MONTH -->
     <div class="card" style="margin-bottom:20px;">
       <div class="card-header">
         <div class="card-title">🏥 Onboarded This Month — <span id="onboardMonthLabel2">May 2025</span></div>
@@ -1684,7 +1313,7 @@
       <!-- CHURN + REACTIVATION DETAIL -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Churn & Reactivation Detail</div>
+          <div class="card-title">Churn &amp; Reactivation Detail</div>
           <div style="font-family:var(--mono);font-size:9px;color:var(--muted);">Churned = 2+ months ₹0 · Reactivated = returned after churn</div>
         </div>
         <div class="doc-scroll" style="max-height:320px;">
@@ -1849,6 +1478,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // CONSTANTS
 // ═══════════════════════════════════════════════════════
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DASHBOARD_YEAR = 2025; // Update when moving to next year
 
 let DOCTORS = [];
 let BD_COLORS = {};
@@ -1856,6 +1486,20 @@ let currentBDFilter = 'All';
 let selectedUploadMonth = null;
 let uploadedFile = null;
 let isDarkMode = true;
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION (early — called by HTML onclick)
+// ═══════════════════════════════════════════════════════
+function showSection(id, tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  tab.classList.add('active');
+  if (id === 'doctors') { renderDocTable(currentBDFilter); buildCohortFilterBtns(); }
+  if (id === 'cohort') { renderCohortTable('cohortDetailBody'); renderDropTable(); }
+  if (id === 'atRisk') renderAtRisk();
+  if (id === 'bdHealth') renderBDHealth();
+}
 
 // ═══════════════════════════════════════════════════════
 // LOADING OVERLAY
@@ -1919,7 +1563,7 @@ async function loadFromSupabase() {
         total: 0
       };
       MONTHS.forEach(m => {
-        doc[m] = revMap[`${d.id}_${m}_2025`] || 0;
+        doc[m] = revMap[`${d.id}_${m}_${DASHBOARD_YEAR}`] || 0;
       });
       doc.total = MONTHS.reduce((s, m) => s + (doc[m] || 0), 0);
       return doc;
@@ -1983,7 +1627,8 @@ async function upsertRevenue(partnerId, month, amount, year = 2025) {
 // FORMAT HELPERS
 // ═══════════════════════════════════════════════════════
 function fmt(n) {
-  if (!n || n === 0) return '—';
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  if (n === 0) return '₹0';
   if (n >= 100000) return '₹' + (n / 100000).toFixed(1) + 'L';
   if (n >= 1000) return '₹' + (n / 1000).toFixed(1) + 'K';
   return '₹' + Math.round(n);
@@ -2066,12 +1711,16 @@ function renderKPIs() {
 function renderBarChart() {
   const totals = getMonthlyTotals();
   const maxVal = Math.max(...totals);
+  // Only show months up to the last filled month — empty future months are misleading
+  const lastFilledIdx = totals.reduce((last, v, i) => v > 0 ? i : last, -1);
+  const showMonths = lastFilledIdx >= 0 ? MONTHS.slice(0, lastFilledIdx + 1) : MONTHS.slice(0, 5);
+  const showVals = lastFilledIdx >= 0 ? totals.slice(0, lastFilledIdx + 1) : totals.slice(0, 5);
   const chart = document.getElementById('barChart');
   const labels = document.getElementById('barLabels');
   chart.innerHTML = '';
   labels.innerHTML = '';
-  MONTHS.forEach((m, i) => {
-    const val = totals[i];
+  showMonths.forEach((m, i) => {
+    const val = showVals[i];
     const h = maxVal > 0 ? Math.max((val / maxVal) * 100, val > 0 ? 3 : 0) : 0;
     const group = document.createElement('div');
     group.className = 'bar-group';
@@ -2177,7 +1826,7 @@ function renderBDTable() {
     tr.innerHTML =
       `<td class="bd-name"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:8px;"></span>${bd}</td>` +
       `<td class="mono-val">${data.docs}</td>` +
-      activeFilled.map(m => `<td class="mono-val ${(data[m]||0)>0?'rev-pos':'rev-zero'}">${fmt(data[m]||0)}</td>`).join('') +
+      activeFilled.map(m => `<td class="mono-val ${(data[m]||0)>0?'rev-pos':'rev-zero'}">${(data[m]||0)>0?fmt(data[m]||0):'₹0'}</td>`).join('') +
       `<td style="padding:6px 10px;">${sparkline}</td>` +
       `<td class="mono-val" style="color:var(--text);font-weight:500;">${fmt(data.total)}</td>` +
       `<td><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">${share}%</div>
@@ -2240,8 +1889,8 @@ function renderCohortTable(tableId) {
       <td style="font-weight:500;">${ob}</td>
       <td style="font-family:var(--mono);color:var(--muted);">${count}</td>
       ${m.map((v,i) => `<td class="${cls(v,ob,i)}">${cls(v,ob,i)==='ct-blank'?'—':v>0?fmt(v):'₹0'}</td>`).join('')}
-      <td style="font-family:var(--mono);color:${parseFloat(r2)>=80?'var(--green)':parseFloat(r2)>=50?'var(--yellow)':'var(--red)'};">${r2}</td>
-      <td style="font-family:var(--mono);color:${parseFloat(r3)>=50?'var(--green)':parseFloat(r3)>=25?'var(--yellow)':'var(--red)'};">${r3}</td>`;
+      <td title="M+2 vs M+1 revenue ratio" style="font-family:var(--mono);color:${parseFloat(r2)>=80?'var(--green)':parseFloat(r2)>=50?'var(--yellow)':'var(--red)'};">${r2}</td>
+      <td title="M+3 vs M+1 revenue ratio" style="font-family:var(--mono);color:${parseFloat(r3)>=50?'var(--green)':parseFloat(r3)>=25?'var(--yellow)':'var(--red)'};">${r3}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -2263,6 +1912,11 @@ function renderDocTable(filterBD = 'All', searchTerm = '') {
   if (cohortFilterMonth) filtered = filtered.filter(d => d.onboard === cohortFilterMonth);
   if (revFilterMonth)    filtered = filtered.filter(d => (d[revFilterMonth] || 0) > 0);
   document.getElementById('docCount').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="20"><div class="empty-state"><span class="emoji">🔍</span><div class="label">No doctors match these filters.</div><div class="hint">Try clearing the cohort or revenue filter, or pick a different BD.</div></div></td></tr>`;
+    return;
+  }
 
   // Dynamic months up to last filled
   const totals = getMonthlyTotals();
@@ -2359,11 +2013,17 @@ function renderAtRisk() {
   const header = document.querySelector('#atRisk .card-title');
   if (header) header.textContent = `At-Risk Doctors — ₹0 in ${curMonth}`;
 
+  if (atRisk.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><span class="emoji">🎉</span><div class="label">No at-risk doctors in ${curMonth}.</div><div class="hint">Everyone onboarded before ${curMonth} has revenue this month. Nice work.</div></div></td></tr>`;
+    return;
+  }
+
   atRisk.forEach((d, idx) => {
     const priority = idx < 5 ? '🔴 High' : idx < 12 ? '🟡 Med' : '⬜ Low';
     const bdColor = BD_COLORS[d.bd]?.pill || '';
     const obIdx = MONTHS.indexOf(d.original_onboard || d.onboard);
-    for (let i = effectiveIdx; i >= 0; i--) { if (revs[i] > 0) { lastActive = MONTHS[i]; break; } }
+    let lastActive = '—';
+    for (let i = effectiveIdx; i >= 0; i--) { if ((d[MONTHS[i]] || 0) > 0) { lastActive = MONTHS[i]; break; } }
     let peak = 0, peakMonth = '—';
     MONTHS.forEach((m,i) => { if ((d[m]||0) > peak) { peak = d[m]||0; peakMonth = m; } });
     let consZero = 0;
@@ -2394,6 +2054,135 @@ function renderAll() {
   renderCohortTable('cohortBody');
   renderDocTable(currentBDFilter);
   buildCohortFilterBtns();
+  renderActionCallout();
+}
+
+// ══════════════════════════════════════════════════════
+// ACTION CALLOUT — "What to do today"
+// ══════════════════════════════════════════════════════
+function renderActionCallout() {
+  if (!DOCTORS.length) return;
+  const container = document.getElementById('actionList');
+  if (!container) return;
+
+  // Show today's date as subtitle
+  const dateEl = document.getElementById('actionDate');
+  if (dateEl) {
+    const d = new Date();
+    dateEl.textContent = `· ${d.toLocaleDateString('en-IN', { day:'numeric', month:'short' })}`;
+  }
+
+  const totals = getMonthlyTotals();
+  const curIdx = totals.reduce((last, v, i) => v > 0 ? i : last, -1);
+  if (curIdx < 0) { container.innerHTML = ''; return; }
+  const curMonth = MONTHS[curIdx];
+  const mIdx = curIdx;
+  const actions = [];
+
+  // 1) High-priority at-risk: doctors with high historical revenue + 2+ months zero
+  const atRiskHigh = DOCTORS
+    .filter(d => {
+      const obIdx = MONTHS.indexOf(d.original_onboard || d.onboard);
+      if (obIdx > mIdx) return false;
+      let consZero = 0;
+      for (let i = mIdx; i >= obIdx; i--) {
+        if ((d[MONTHS[i]] || 0) === 0) consZero++;
+        else break;
+      }
+      return consZero >= 2 && d.total >= 10000;
+    })
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 2);
+
+  atRiskHigh.forEach(d => {
+    actions.push({
+      icon: '📞',
+      text: `Call <strong>${d.name}</strong> — ${d.total >= 50000 ? 'Platinum' : 'Gold'} partner, ${d.total >= 1000 ? fmt(d.total) : '₹' + d.total} lifetime, dormant 2+ months.`,
+      sub: `BD: ${d.bd.split(' ')[0]}`,
+      tag: 'Urgent',
+      tagClass: 'tag-urgent',
+      onClick: `openDocChart('${d.id}')`
+    });
+  });
+
+  // 2) BDs that haven't hit onboarding target
+  const bds = Object.keys(BD_COLORS);
+  const bdsBehind = bds.map(bd => {
+    const onboardedThisMonth = DOCTORS.filter(d => d.bd === bd && d.onboard === curMonth).length;
+    return { bd, count: onboardedThisMonth };
+  }).filter(x => x.count < ONBOARD_TARGET).sort((a,b) => a.count - b.count).slice(0, 2);
+
+  bdsBehind.forEach(x => {
+    actions.push({
+      icon: '🎯',
+      text: `<strong>${x.bd.split(' ')[0]}</strong> needs ${ONBOARD_TARGET - x.count} more onboarding${ONBOARD_TARGET - x.count === 1 ? '' : 's'} to hit the ${curMonth} target.`,
+      sub: `${x.count}/${ONBOARD_TARGET} onboarded`,
+      tag: 'Behind',
+      tagClass: 'tag-warn',
+      onClick: `filterBD('${x.bd}', document.querySelector('[data-bd="${x.bd}"]')); showSection('doctors', document.querySelectorAll('.nav-tab')[1]);`
+    });
+  });
+
+  // 3) BDs with low activation (no healthy docs)
+  const bdsInactive = bds.map(bd => {
+    const docs = DOCTORS.filter(d => d.bd === bd);
+    const healthy = docs.filter(d => {
+      const obIdx = MONTHS.indexOf(d.original_onboard || d.onboard);
+      if (obIdx > mIdx) return false;
+      const revs = MONTHS.slice(obIdx, mIdx + 1).map(m => d[m] || 0);
+      const last = revs[revs.length - 1] || 0;
+      return last >= QUALITY_THRESHOLD;
+    }).length;
+    return { bd, healthy, total: docs.length };
+  }).filter(x => x.healthy === 0 && x.total > 0).slice(0, 1);
+
+  bdsInactive.forEach(x => {
+    actions.push({
+      icon: '⚠️',
+      text: `<strong>${x.bd.split(' ')[0]}</strong> has 0 quality docs (₹8K+) this month — 1:1 coaching needed.`,
+      sub: `${x.total} total docs under this BD`,
+      tag: 'Alert',
+      tagClass: 'tag-urgent',
+      onClick: `showSection('bdHealth', document.querySelectorAll('.nav-tab')[4]);`
+    });
+  });
+
+  // 4) Positive: a winning story
+  const topGrowth = DOCTORS
+    .filter(d => {
+      const obIdx = MONTHS.indexOf(d.original_onboard || d.onboard);
+      if (obIdx > mIdx - 1 || obIdx < 0) return false;
+      const this_m = d[curMonth] || 0;
+      const prev_m = mIdx > 0 ? (d[MONTHS[mIdx-1]] || 0) : 0;
+      return this_m > 0 && this_m > prev_m * 1.5 && this_m >= QUALITY_THRESHOLD;
+    })
+    .sort((a, b) => (b[curMonth] || 0) - (a[curMonth] || 0))[0];
+
+  if (topGrowth) {
+    actions.push({
+      icon: '🚀',
+      text: `<strong>${topGrowth.name}</strong> jumped to ${fmt(topGrowth[curMonth])} this month (up from ${fmt(MONTHS.slice(0, mIdx).reduce((s,m)=>Math.max(s, topGrowth[m]||0), 0))} peak).`,
+      sub: `BD: ${topGrowth.bd.split(' ')[0]} — celebrate and learn`,
+      tag: 'Win',
+      tagClass: 'tag-go',
+      onClick: `openDocChart('${topGrowth.id}')`
+    });
+  }
+
+  // Fallback if we have nothing
+  if (actions.length === 0) {
+    container.innerHTML = `<div class="empty-state"><span class="emoji">🎉</span><div class="label">Nothing to flag — your team is humming.</div><div class="hint">All BDs at target, no critical at-risk doctors.</div></div>`;
+    return;
+  }
+
+  // Render max 4 actions
+  container.innerHTML = actions.slice(0, 4).map(a => `
+    <div class="action-item" onclick="${a.onClick}">
+      <div class="action-icon">${a.icon}</div>
+      <div class="action-text">${a.text}<div class="sub">${a.sub}</div></div>
+      <span class="action-tag ${a.tagClass}">${a.tag}</span>
+    </div>
+  `).join('');
 }
 
 function rebuildBDFilterBar() {
@@ -2417,16 +2206,7 @@ function rebuildBDFilterBar() {
 // ═══════════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════════
-function showSection(id, tab) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  tab.classList.add('active');
-  if (id === 'doctors') { renderDocTable(currentBDFilter); buildCohortFilterBtns(); }
-  if (id === 'cohort') { renderCohortTable('cohortDetailBody'); renderDropTable(); }
-  if (id === 'atRisk') renderAtRisk();
-  if (id === 'bdHealth') renderBDHealth();
-}
+
 
 // ═══════════════════════════════════════════════════════
 // COHORT CROSS-FILTER
@@ -2873,6 +2653,72 @@ let healthViewMonth = null;
 // ═══════════════════════════════════════════════════════
 // BD HEALTH — RENDER
 // ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// BD PERFORMANCE CHART — Simple Bar Chart
+// ═══════════════════════════════════════════════════════
+function renderBDPerformanceChart(month) {
+  const container = document.getElementById('bdPerformanceChart');
+  if (!container) return;
+  
+  const bds = Object.keys(BD_COLORS);
+  const bdStats = bds.map(bd => {
+    const docs = DOCTORS.filter(d => d.bd === bd);
+    const visits = activityData[`${bd}_${month}_${DASHBOARD_YEAR}`]?.visits || 0;
+    const regs = activityData[`${bd}_${month}_${DASHBOARD_YEAR}`]?.registrations || 0;
+    const monthRev = docs.reduce((s, d) => s + (d[month] || 0), 0);
+    const active = docs.filter(d => (d[month] || 0) > 0).length;
+    return { bd, visits, regs, monthRev, active, total: docs.length };
+  }).filter(b => b.visits > 0 || b.monthRev > 0 || b.total > 0);
+  
+  if (bdStats.length === 0) {
+    container.innerHTML = `<div class="empty-state"><span class="emoji">📊</span><div class="label">No activity yet.</div></div>`;
+    return;
+  }
+  
+  // Sort by revenue
+  bdStats.sort((a, b) => b.monthRev - a.monthRev);
+  
+  const maxRev = Math.max(...bdStats.map(b => b.monthRev), 1);
+  const maxVisits = Math.max(...bdStats.map(b => b.visits), 1);
+  
+  let html = `<div style="display:flex;flex-direction:column;gap:16px;">`;
+  
+  bdStats.forEach((b, idx) => {
+    const color = BD_COLORS[b.bd]?.hex || '#888';
+    const revWidth = (b.monthRev / maxRev) * 100;
+    const visitWidth = (b.visits / maxVisits) * 100;
+    const icon = idx < 3 ? ['🥇','🥈','🥉'][idx] : '  ';
+    
+    html += `
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <div style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:13px;">
+          <span>${icon}</span>
+          <span style="width:80px;color:${color};">${b.bd.split(' ')[0]}</span>
+          <div style="flex:1;display:flex;gap:12px;font-family:var(--mono);font-size:11px;color:var(--muted);">
+            <span>${b.visits} visits</span>
+            <span>·</span>
+            <span>${b.regs} regs</span>
+            <span>·</span>
+            <span>${b.active}/${b.total} active</span>
+          </div>
+          <span style="font-weight:600;font-family:var(--mono);">${fmt(b.monthRev)}</span>
+        </div>
+        <div style="display:flex;gap:6px;height:24px;align-items:center;">
+          <div style="flex:1;position:relative;background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+            <div style="height:100%;background:${color};width:${revWidth}%;opacity:0.7;transition:width 0.3s;"></div>
+            <div style="position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;padding:0 6px;font-family:var(--mono);font-size:9px;color:var(--text);">
+              ${revWidth > 30 ? fmt(b.monthRev) : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
 function renderBDHealth() {
   // Determine default month = last filled
   const totals = getMonthlyTotals();
@@ -2897,6 +2743,8 @@ function renderBDHealth() {
 
   renderActivityGrid(month);
   renderOnboardedDocsList(month);
+  renderActivityAnalysis(month);
+  renderBDPerformanceChart(month);
 
   const bds = Object.keys(BD_COLORS);
 
@@ -3093,7 +2941,7 @@ async function submitNewBD() {
 // DOCTOR REVENUE CHART MODAL
 // ═══════════════════════════════════════════════════════
 function openDocChart(doctorId) {
-  const d = DOCTORS.find(doc => doc.id === doctorId);
+  const d = DOCTORS.find(doc => String(doc.id) === String(doctorId));
   if (!d) return;
   document.getElementById('doctorChartModal').classList.add('open');
   document.getElementById('chartDocName').textContent = d.name;
@@ -3224,6 +3072,8 @@ async function saveActivityData() {
     upserts.forEach(u => {
       activityData[`${u.bd}_${u.month}_2025`] = { visits: u.visits, registrations: u.registrations };
     });
+    // Re-render analysis so the new numbers show up
+    if (document.getElementById('bdHealth').classList.contains('active')) renderActivityAnalysis(healthViewMonth);
     showToast(`✓ Activity saved for ${month} — ${bds.length} BDs updated`);
   } catch(err) {
     // Give actionable error with SQL to fix
@@ -3242,6 +3092,141 @@ async function saveActivityData() {
 ALTER TABLE monthly_activity DISABLE ROW LEVEL SECURITY;`);
   } finally {
     if (btn) { btn.textContent = 'Save Activity Data'; btn.disabled = false; }
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// ACTIVITY ANALYSIS — Quadrant + Efficiency Leaderboard
+// ══════════════════════════════════════════════════════
+function renderActivityAnalysis(month) {
+  const labelEl = document.getElementById('analysisMonthLabel');
+  if (labelEl) labelEl.textContent = `${month} 2025`;
+
+  const bds = Object.keys(BD_COLORS);
+  const mIdx = MONTHS.indexOf(month);
+
+  // Aggregate per BD
+  const bdStats = bds.map(bd => {
+    const key = `${bd}_${month}_2025`;
+    const act = activityData[key] || { visits: 0, registrations: 0 };
+    const monthRev = DOCTORS.filter(d => d.bd === bd).reduce((s, d) => s + (d[month] || 0), 0);
+    const activeDocs = DOCTORS.filter(d => d.bd === bd && (d[month] || 0) > 0).length;
+    return {
+      bd,
+      visits: act.visits,
+      regs: act.registrations,
+      monthRev,
+      activeDocs,
+      revPerVisit: act.visits > 0 ? monthRev / act.visits : 0,
+      revPerReg: act.registrations > 0 ? monthRev / act.registrations : 0,
+      convRate: act.visits > 0 ? (act.registrations / act.visits * 100) : 0,
+      visitsPerDoc: activeDocs > 0 ? act.visits / activeDocs : 0
+    };
+  });
+
+  // ── Stat strip ──
+  const totalVisits = bdStats.reduce((s, b) => s + b.visits, 0);
+  const totalRegs = bdStats.reduce((s, b) => s + b.regs, 0);
+  const totalRev = bdStats.reduce((s, b) => s + b.monthRev, 0);
+  const avgConv = totalVisits > 0 ? (totalRegs / totalVisits * 100) : 0;
+  const avgRevPerVisit = totalVisits > 0 ? totalRev / totalVisits : 0;
+
+  document.getElementById('activityStatStrip').innerHTML = `
+    <div class="activity-stat">
+      <div class="activity-stat-label">Total Visits</div>
+      <div class="activity-stat-val">${totalVisits}</div>
+      <div class="activity-stat-sub">across ${bds.length} BDs</div>
+    </div>
+    <div class="activity-stat">
+      <div class="activity-stat-label">Registrations</div>
+      <div class="activity-stat-val">${totalRegs}</div>
+      <div class="activity-stat-sub">${avgConv.toFixed(0)}% conv rate</div>
+    </div>
+    <div class="activity-stat">
+      <div class="activity-stat-label">Avg ₹/Visit</div>
+      <div class="activity-stat-val">${fmt(avgRevPerVisit)}</div>
+      <div class="activity-stat-sub">revenue per unit of effort</div>
+    </div>
+    <div class="activity-stat">
+      <div class="activity-stat-label">Visits / Active Doc</div>
+      <div class="activity-stat-val">${(() => {
+        const totalActive = bdStats.reduce((s, b) => s + b.activeDocs, 0);
+        return totalActive > 0 ? (totalVisits / totalActive).toFixed(1) : '—';
+      })()}</div>
+      <div class="activity-stat-sub">workload balance</div>
+    </div>
+  `;
+
+  // ── Quadrant canvas ──
+  const canvas = document.getElementById('quadrantCanvas');
+  if (totalVisits === 0) {
+    canvas.innerHTML = `<div class="empty-state" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;"><span class="emoji">📊</span><div class="label">No activity data for ${month}.</div><div class="hint">Enter visits &amp; registrations above to see the analysis.</div></div>`;
+    document.getElementById('leaderboardBody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;font-family:var(--mono);font-size:11px;">Awaiting activity data</td></tr>`;
+    document.getElementById('efficiencyInsight').textContent = '';
+    return;
+  }
+
+  const maxVisits = Math.max(...bdStats.map(b => b.visits), 1);
+  const maxRev = Math.max(...bdStats.map(b => b.monthRev), 1);
+
+  canvas.innerHTML = bdStats.map((b, i) => {
+    if (b.visits === 0 && b.monthRev === 0) return ''; // skip inactive BDs
+    // Pad slightly inside the canvas
+    const x = 10 + (b.visits / maxVisits) * 78;
+    const y = 10 + (1 - b.monthRev / maxRev) * 78;
+    const color = BD_COLORS[b.bd]?.hex || '#888';
+    const init = b.bd.split(' ')[0].slice(0, 2).toUpperCase();
+    return `<div class="quadrant-dot" style="left:${x}%;top:${y}%;background:${color};" title="${b.bd}: ${b.visits} visits · ${fmt(b.monthRev)} revenue · ${fmt(b.revPerVisit)}/visit">${init}</div>`;
+  }).join('');
+
+  // ── Leaderboard — sorted by ₹/visit (highest first), BDs with no activity go to bottom ──
+  const ranked = [...bdStats].sort((a, b) => {
+    if (a.visits === 0 && b.visits === 0) return b.monthRev - a.monthRev;
+    if (a.visits === 0) return 1;
+    if (b.visits === 0) return -1;
+    return b.revPerVisit - a.revPerVisit;
+  });
+
+  // Determine thresholds for ₹/visit color coding
+  const activeRevPerVisits = ranked.filter(b => b.visits > 0).map(b => b.revPerVisit);
+  const medianRpv = activeRevPerVisits.length > 0
+    ? activeRevPerVisits.sort((a, b) => a - b)[Math.floor(activeRevPerVisits.length / 2)]
+    : 0;
+
+  document.getElementById('leaderboardBody').innerHTML = ranked.map((b, i) => {
+    const rpvClass = b.visits === 0 ? '' : (b.revPerVisit >= medianRpv * 1.5 ? 'eff-good' : b.revPerVisit >= medianRpv * 0.75 ? 'eff-mid' : 'eff-bad');
+    const convClass = b.visits === 0 ? '' : (b.convRate >= 30 ? 'eff-good' : b.convRate >= 15 ? 'eff-mid' : 'eff-bad');
+    return `<tr>
+      <td class="leaderboard-rank ${i === 0 && b.visits > 0 ? 'top' : ''}">${i + 1}</td>
+      <td style="font-weight:500;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${BD_COLORS[b.bd]?.hex || '#888'};margin-right:6px;"></span>${b.bd.split(' ')[0]}</td>
+      <td class="mono-val" style="color:${b.visits > 0 ? 'var(--text)' : 'var(--muted)'};">${b.visits || '—'}</td>
+      <td class="mono-val" style="color:${b.regs > 0 ? 'var(--text)' : 'var(--muted)'};">${b.regs || '—'}</td>
+      <td class="${convClass}">${b.visits > 0 ? b.convRate.toFixed(0) + '%' : '—'}</td>
+      <td class="${rpvClass}">${b.visits > 0 ? fmt(b.revPerVisit) : '—'}</td>
+      <td class="${rpvClass}">${b.regs > 0 ? fmt(b.revPerReg) : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  // ── Auto-generated insight ──
+  const insightEl = document.getElementById('efficiencyInsight');
+  const withActivity = ranked.filter(b => b.visits > 0);
+  if (withActivity.length === 0) {
+    insightEl.textContent = '';
+  } else {
+    const best = withActivity[0];
+    const worst = withActivity[withActivity.length - 1];
+    const busy = withActivity.filter(b => b.revPerVisit < medianRpv * 0.5 && b.visits >= 10);
+    const quiet = withActivity.filter(b => b.visits < 5 && b.monthRev > 0);
+    const insights = [];
+    insights.push(`<strong>${best.bd.split(' ')[0]}</strong> leads at ${fmt(best.revPerVisit)} per visit.`);
+    if (worst && worst !== best) {
+      insights.push(`<strong>${worst.bd.split(' ')[0]}</strong> is at ${fmt(worst.revPerVisit)}/visit — ${best.revPerVisit > 0 ? ((best.revPerVisit / Math.max(worst.revPerVisit, 1)).toFixed(1) + 'x behind the leader') : 'no revenue per visit'}.`);
+    }
+    busy.forEach(b => insights.push(`⚠️ <strong>${b.bd.split(' ')[0]}</strong> is doing ${b.visits} visits but only ${fmt(b.monthRev)} revenue — needs conversion coaching.`));
+    if (quiet.length > 0) {
+      insights.push(`💡 ${quiet.map(b => b.bd.split(' ')[0]).join(', ')} ${quiet.length === 1 ? 'is' : 'are'} under-visiting relative to revenue.`);
+    }
+    insightEl.innerHTML = insights.join(' ');
   }
 }
 
@@ -3294,6 +3279,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFromSupabase().then(() => loadActivityData());
 });
 </script>
+
 
 
 </body></html>
