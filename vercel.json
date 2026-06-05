@@ -1,9 +1,4 @@
 {
   "buildCommand": "echo 'Static HTML site'",
-  "outputDirectory": ".",
-  "framework": "static",
-  "env": {
-    "VITE_SUPABASE_URL": "https://your-project.supabase.co",
-    "VITE_SUPABASE_ANON_KEY": "your-key-here"
-  }
+  "outputDirectory": "."
 }
