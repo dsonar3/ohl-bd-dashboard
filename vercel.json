@@ -1,36 +1,9 @@
 {
   "buildCommand": "echo 'Static HTML site'",
-  "outputDirectory": "public",
+  "outputDirectory": ".",
   "framework": "static",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        }
-      ]
-    }
-  ],
-  "env": [
-    {
-      "key": "VITE_SUPABASE_URL",
-      "description": "Supabase Project URL (e.g., https://project.supabase.co)"
-    },
-    {
-      "key": "VITE_SUPABASE_ANON_KEY",
-      "description": "Supabase Anon Key for client-side access"
-    }
-  ]
+  "env": {
+    "VITE_SUPABASE_URL": "https://your-project.supabase.co",
+    "VITE_SUPABASE_ANON_KEY": "your-key-here"
+  }
 }
