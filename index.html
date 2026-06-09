@@ -2,43 +2,82 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OHL · BD Performance Dashboard</title>
+<!-- ✅ OPTIMIZATION: Preconnect to fonts for faster loading -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
   :root {
-    --bg: #0a0c0f;
+    /* ═══════════════════════════════════════════════════════
+       APPLE LIQUID GLASS DARK MODE - VisionOS Design System
+       ═══════════════════════════════════════════════════════ */
+    
+    /* Base Colors */
+    --bg: #020617;
+    --bg-secondary: #071428;
+    --bg-tertiary: #0B1020;
+    
+    /* Semantic Colors */
     --seg-platinum: #e5c100;
     --seg-silver: #94a3b8;
     --seg-bronze: #a07850;
-    --surface: #111318;
-    --card: #161a21;
-    --border: #1e2430;
-    --border-bright: #2a3245;
-    --accent: #00d4aa;
+    
+    /* Glass Tint Colors */
+    --glass-aqua: rgba(34,211,238,.08);      /* Cyan Glass */
+    --glass-emerald: rgba(16,185,129,.08);   /* Green Glass */
+    --glass-purple: rgba(168,85,247,.08);    /* Purple Glass */
+    --glass-rose: rgba(244,63,94,.08);       /* Rose Glass */
+    --glass-blue: rgba(59,130,246,.08);      /* Blue Glass */
+    
+    /* Surface Colors */
+    --surface: rgba(15,23,42,0.55);
+    --card: rgba(15,23,42,0.55);
+    --border: rgba(255,255,255,0.08);
+    --border-bright: rgba(255,255,255,0.12);
+    
+    /* Accent Colors */
+    --accent: #00E5FF;                       /* Cyan */
     --accent2: #f97316;
     --accent3: #818cf8;
     --accent4: #fb7185;
     --accent5: #facc15;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --faint: #1e2736;
+    
+    /* Text Colors */
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --faint: #1e293b;
+    
+    /* Semantic Colors */
     --green: #10b981;
     --red: #f43f5e;
     --yellow: #fbbf24;
+    
+    /* Typography */
     --mono: 'DM Mono', monospace;
     --sans: 'Sora', sans-serif;
 
-    /* ── GLASS INTENSITY TOKENS (dark mode defaults = Medium) ── */
-    --gi-blur:        16px;
-    --gi-sat:         140%;
+    /* ═══════════════════════════════════════════════════════
+       GLASS INTENSITY SYSTEM - Adaptive for Device Performance
+       Low = Mobile/Weak GPU | Medium = Desktop | High = Studio
+       ═══════════════════════════════════════════════════════ */
+    
+    /* MEDIUM INTENSITY (Default for most devices) */
+    --gi-blur:        40px;
+    --gi-sat:         180%;
     --gi-bg-op:       0.55;
-    --gi-border-op:   0.50;
-    --gi-shadow:      0 8px 24px rgba(0,0,0,0.18);
-    --gi-reflect-op:  0.10;
-    --gi-card-bg:     rgba(22, 26, 33, var(--gi-bg-op));
-    --gi-card-border: rgba(42, 50, 69, var(--gi-border-op));
+    --gi-border-op:   0.08;
+    --gi-shadow:      0 20px 60px rgba(0,0,0,0.35);
+    --gi-reflect-op:  0.12;
+    --gi-card-bg:     rgba(15, 23, 42, var(--gi-bg-op));
+    --gi-card-border: rgba(255, 255, 255, var(--gi-border-op));
+    
+    /* Glass Reflection Layers */
+    --gi-reflect-top: linear-gradient(180deg, rgba(255,255,255,0.08), transparent 30%);
+    --gi-reflect-inner: inset 0 1px rgba(255,255,255,0.08);
+    --gi-reflect-edge: inset 0 0 0 1px rgba(255,255,255,0.05);
   }
 
   /* ═══════════════════════════════════════════════
@@ -87,36 +126,64 @@
     line-height: 1.5;
   }
 
-  /* VisionOS luxury layered background */
-  body.light-mode {
+  /* ═══════════════════════════════════════════════════════
+     APPLE LIQUID GLASS - Dark Mode Background System
+     VisionOS-inspired layered depth with subtle radiance
+     ═══════════════════════════════════════════════════════ */
+  body {
     background:
-      radial-gradient(circle at 15% 15%, rgba(255,183,107,0.22) 0%, transparent 38%),
-      radial-gradient(circle at 85% 10%, rgba(255,220,180,0.18) 0%, transparent 32%),
-      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.45) 0%, transparent 55%),
-      radial-gradient(circle at 20% 85%, rgba(255,200,140,0.12) 0%, transparent 30%),
-      linear-gradient(180deg, #FCFCFD 0%, #F7F8FA 100%);
+      radial-gradient(circle at top left,     rgba(0,229,255,0.08) 0%, transparent 35%),
+      radial-gradient(circle at top right,    rgba(168,85,247,0.08) 0%, transparent 30%),
+      radial-gradient(circle at center,       rgba(255,255,255,0.03) 0%, transparent 50%),
+      linear-gradient(180deg,                 #020617 0%, #071428 40%, #0B1020 100%);
     background-attachment: fixed;
   }
 
+  /* VisionOS luxury layered background */
+  body.light-mode {
+    background: linear-gradient(180deg, #FCFCFD 0%, #F7F8FA 100%);
+  }
+  
+  /* ✅ OPTIMIZATION: Use ::before overlay instead of multiple radial gradients */
+  body.light-mode::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 15% 15%, rgba(255,183,107,0.12) 0%, transparent 45%),
+      radial-gradient(circle at 85% 10%, rgba(255,220,180,0.08) 0%, transparent 45%);
+    pointer-events: none;
+    z-index: -1;
+    will-change: transform;
+  }
+
   /* HEADER */
+  /* ═══════════════════════════════════════════════════════
+     HEADER - Floating Glass Command Center
+     Apple Intelligence Design Language
+     ═══════════════════════════════════════════════════════ */
   .header {
-    background: rgba(17, 19, 24, 0.6);
-    border-bottom: 1px solid rgba(42, 50, 69, 0.4);
+    background: var(--gi-card-bg);
+    backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
+    -webkit-backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
+    border: 1px solid var(--gi-card-border);
+    box-shadow: var(--gi-shadow);
     padding: 0 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 60px;
+    height: 64px;
     position: sticky;
     top: 0;
     z-index: 100;
   }
+  
   body.light-mode .header {
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(40px) saturate(200%);
     -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border-bottom: 1px solid rgba(255,255,255,0.75);
-    box-shadow: 0 1px 0 rgba(255,183,107,0.15), 0 8px 32px rgba(0,0,0,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
   }
   .logo {
     display: flex;
@@ -130,7 +197,7 @@
     color: var(--accent);
   }
   .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-  .header-right { display: flex; align-items: center; gap: 12px; }
+  /* .header-right base — overridden by v8 CSS below */
   .last-updated { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
   /* THEME TOGGLE */
@@ -160,22 +227,40 @@
   }
 
   /* UPLOAD BUTTON */
+  /* ═══════════════════════════════════════════════════════
+     BUTTONS - Apple Glass Interaction with Brightness
+     Buttons with subtle glass tint and hover elevation
+     ═══════════════════════════════════════════════════════ */
   .upload-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, rgba(0,212,170,0.15), rgba(0,212,170,0.08));
-    border: 1px solid rgba(0,212,170,0.4);
+    background: rgba(0,229,255,0.12);
+    border: 1px solid rgba(0,229,255,0.30);
     color: var(--accent);
     font-family: var(--sans);
     font-size: 12px;
     font-weight: 500;
-    padding: 7px 14px;
-    border-radius: 6px;
+    padding: 9px 16px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
-  .upload-btn:hover { background: linear-gradient(135deg, rgba(0,212,170,0.25), rgba(0,212,170,0.15)); }
+  
+  .upload-btn:hover { 
+    background: rgba(0,229,255,0.18);
+    border-color: rgba(0,229,255,0.50);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0,229,255,0.15);
+  }
+  
+  .upload-btn:active {
+    transform: translateY(0px);
+    box-shadow: 0 6px 16px rgba(0,229,255,0.12);
+  }
+  
   #fileInput { display: none; }
 
   .upload-toast {
@@ -198,13 +283,20 @@
   .upload-toast.show { opacity: 1; transform: translateY(0); }
  
   /* NAV TABS */
+  /* ═══════════════════════════════════════════════════════
+     NAVIGATION - Apple Segmented Glass Control
+     Liquid sliding indicator with subtle tint
+     ═══════════════════════════════════════════════════════ */
   .nav {
-    background: rgba(17, 19, 24, 0.5);
-    border-bottom: 1px solid rgba(42, 50, 69, 0.3);
+    background: var(--gi-card-bg);
+    backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
+    -webkit-backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
+    border-bottom: 1px solid var(--gi-card-border);
     padding: 0 32px;
     display: flex;
     gap: 0;
   }
+  
   body.light-mode .nav {
     background: rgba(255,255,255,0.45);
     backdrop-filter: blur(30px) saturate(180%);
@@ -212,49 +304,104 @@
     border-bottom: 1px solid rgba(255,255,255,0.65);
     box-shadow: 0 1px 0 rgba(255,183,107,0.12);
   }
+  
   body.light-mode .nav-tab {
     color: #6E6E73;
   }
+  
   body.light-mode .nav-tab:hover {
     color: #1C1C1E;
   }
+  
   body.light-mode .nav-tab.active {
     color: #7A4B1A;
     border-bottom-color: #FFB36B;
     background: linear-gradient(135deg, rgba(255,221,186,0.5), rgba(255,179,107,0.3));
   }
+  
+  /* Tab styling with smooth liquid indicator */
   .nav-tab {
-    padding: 12px 20px;
+    padding: 14px 22px;
     font-size: 12px;
     font-weight: 500;
     color: var(--muted);
     cursor: pointer;
     border-bottom: 2px solid transparent;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    position: relative;
   }
-  .nav-tab:hover { color: var(--text); }
-  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  
+  .nav-tab:hover { 
+    color: var(--text);
+  }
+  
+  .nav-tab.active { 
+    color: var(--accent); 
+    border-bottom-color: var(--accent);
+    background: rgba(0,229,255,0.08);
+  }
 
   /* MAIN CONTENT */
   .main { padding: 28px 32px; }
 
   /* KPI GRID */
+  /* ═══════════════════════════════════════════════════════
+     KPI CARDS - Colored Glass Tints with Depth
+     Each KPI gets a subtle semantic glass color
+     ═══════════════════════════════════════════════════════ */
   .kpi-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 12px;
     margin-bottom: 24px;
   }
+  
   .kpi-card {
-    background: rgba(22, 26, 33, 0.55);
-    border: 1px solid rgba(42, 50, 69, 0.5);
-    border-radius: 10px;
-    padding: 18px 20px;
+    background: var(--gi-card-bg);
+    backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
+    -webkit-backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
+    border: 1px solid var(--gi-card-border);
+    border-radius: 16px;
+    padding: 20px 22px;
     position: relative;
     overflow: hidden;
+    box-shadow: 
+      var(--gi-shadow),
+      var(--gi-reflect-inner),
+      var(--gi-reflect-edge);
+    transition: all 0.4ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
+  
+  /* Hover elevation effect */
+  .kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 30px 80px rgba(0,0,0,0.4),
+      var(--gi-reflect-inner),
+      var(--gi-reflect-edge);
+  }
+  
+  /* Glass reflection overlay */
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 45%;
+    background: var(--gi-reflect-top);
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  /* Colored glass tints for each KPI */
+  .kpi-card:nth-child(1) { background: var(--glass-aqua); }    /* Doctors - Cyan */
+  .kpi-card:nth-child(2) { background: var(--glass-emerald); } /* Revenue - Green */
+  .kpi-card:nth-child(3) { background: var(--glass-blue); }    /* Performance - Blue */
+  .kpi-card:nth-child(4) { background: var(--glass-purple); }  /* Risk - Purple */
+  .kpi-card:nth-child(5) { background: var(--glass-rose); }    /* Churn - Rose */
+  
   body.light-mode .kpi-card {
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(40px) saturate(180%);
@@ -334,12 +481,35 @@
   .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 
   /* CARDS */
+  /* ═══════════════════════════════════════════════════════
+     CARDS - Apple Liquid Glass with Full Reflections
+     Suspended glass panels with depth and luminance
+     ═══════════════════════════════════════════════════════ */
   .card {
-    background: rgba(22, 26, 33, 0.55);
-    border: 1px solid rgba(42, 50, 69, 0.5);
-    border-radius: 10px;
+    background: var(--gi-card-bg);
+    backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
+    -webkit-backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
+    border: 1px solid var(--gi-card-border);
+    border-radius: 16px;
+    box-shadow: 
+      var(--gi-shadow),
+      var(--gi-reflect-inner),
+      var(--gi-reflect-edge);
     overflow: hidden;
+    position: relative;
   }
+  
+  /* Glass reflection overlay on all cards */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 40%;
+    background: var(--gi-reflect-top);
+    pointer-events: none;
+    z-index: 1;
+  }
+  
   body.light-mode .card {
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(40px) saturate(180%);
@@ -436,6 +606,10 @@
   .bar-inactive { background: var(--border-bright); }
 
   /* BD PERFORMANCE TABLE */
+  /* ═══════════════════════════════════════════════════════
+     TABLES - Apple Data Panels with Floating Rows
+     Soft separators, elevated rows, glass backgrounds
+     ═══════════════════════════════════════════════════════ */
   .bd-table { width: 100%; border-collapse: collapse; }
   .bd-table th {
     font-family: var(--mono);
@@ -443,29 +617,33 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
-    padding: 8px 12px;
+    padding: 12px 12px;
     text-align: left;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
   }
   .bd-table td {
-    padding: 10px 12px;
+    padding: 12px 12px;
     font-size: 14px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
     color: var(--text);
   }
   .bd-table tr:last-child td { border-bottom: none; }
-  .bd-table tr:hover td { background: var(--faint); }
+  .bd-table tr:hover td { 
+    background: rgba(0,229,255,0.05);
+    transition: all 0.3s;
+  }
   .bd-name { font-weight: 500; color: var(--text); }
   .mono-val { font-family: var(--mono); font-size: 13px; color: var(--text); }
   .progress-bar {
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
+    height: 5px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2.5px;
     overflow: hidden;
-    margin-top: 4px;
-    width: 80px;
+    margin-top: 6px;
+    width: 90px;
   }
-  .progress-fill { height: 100%; border-radius: 2px; }
+  .progress-fill { height: 100%; border-radius: 2.5px; }
 
   /* DOCTOR TABLE */
   .doc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -475,39 +653,48 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
-    padding: 8px 10px;
+    padding: 12px 10px;
     text-align: left;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     position: sticky;
     top: 0;
-    background: var(--card);
+    background: var(--gi-card-bg);
     z-index: 5;
+    backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
+    -webkit-backdrop-filter: blur(var(--gi-blur)) saturate(var(--gi-sat));
   }
   .doc-table td {
-    padding: 9px 10px;
-    border-bottom: 1px solid var(--border);
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
     vertical-align: middle;
     color: var(--text);
   }
-  .doc-table tr:hover td { background: var(--faint); }
+  .doc-table tr:hover td { 
+    background: rgba(0,229,255,0.05);
+    transition: all 0.3s;
+  }
   .doc-scroll { max-height: 420px; overflow-y: auto; }
-  .doc-scroll::-webkit-scrollbar { width: 4px; }
-  .doc-scroll::-webkit-scrollbar-track { background: var(--bg); }
-  .doc-scroll::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+  .doc-scroll::-webkit-scrollbar { width: 6px; }
+  .doc-scroll::-webkit-scrollbar-track { background: transparent; }
+  .doc-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+  .doc-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
 
   .pill {
     display: inline-block;
     font-family: var(--mono);
-    font-size: 9px;
-    padding: 2px 7px;
-    border-radius: 99px;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 6px;
     white-space: nowrap;
+    font-weight: 500;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
-  .pill-raza { background: rgba(0,212,170,0.12); color: var(--accent); }
-  .pill-swaraaj { background: rgba(249,115,22,0.12); color: var(--accent2); }
-  .pill-abhijeet { background: rgba(129,140,248,0.12); color: var(--accent3); }
-  .pill-vikas { background: rgba(251,113,133,0.12); color: var(--accent4); }
-  .pill-shahbaaz { background: rgba(250,204,21,0.12); color: var(--accent5); }
+  .pill-raza { background: rgba(34,211,238,0.12); color: #00E5FF; border: 1px solid rgba(34,211,238,0.25); }
+  .pill-swaraaj { background: rgba(249,115,22,0.12); color: var(--accent2); border: 1px solid rgba(249,115,22,0.25); }
+  .pill-abhijeet { background: rgba(129,140,248,0.12); color: var(--accent3); border: 1px solid rgba(129,140,248,0.25); }
+  .pill-vikas { background: rgba(251,113,133,0.12); color: var(--accent4); border: 1px solid rgba(251,113,133,0.25); }
+  .pill-shahbaaz { background: rgba(250,204,21,0.12); color: var(--accent5); border: 1px solid rgba(250,204,21,0.25); }
 
   .rev-cell { font-family: var(--mono); text-align: right; font-size: 11px; }
   .rev-pos { color: var(--green); }
@@ -1665,6 +1852,137 @@
   .gi-btn[data-level="medium"]:hover::after { content: 'Balanced glass'; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); font-size: 9px; background: var(--card); border: 1px solid var(--border); padding: 3px 6px; border-radius: 4px; white-space: nowrap; color: var(--text); pointer-events: none; z-index: 99; }
   .gi-btn[data-level="high"]:hover::after   { content: 'Full VisionOS'; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); font-size: 9px; background: var(--card); border: 1px solid var(--border); padding: 3px 6px; border-radius: 4px; white-space: nowrap; color: var(--text); pointer-events: none; z-index: 99; }
 
+  /* ═══════════════════════════════════════════════
+     V8 UNIFIED HEADER — NO SIDEBAR, FULL WIDTH
+     Logo · Nav Tabs · Action Buttons all in one bar
+     ═══════════════════════════════════════════════ */
+
+  /* Override old 60px single-purpose header */
+  .header {
+    background: rgba(10, 12, 15, 0.85) !important;
+    border-bottom: 1px solid rgba(42, 50, 69, 0.5) !important;
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    padding: 0 24px !important;
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    align-items: center !important;
+    height: 52px !important;
+    gap: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 200 !important;
+    box-shadow: 0 1px 0 rgba(0,212,170,0.06), 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  body.light-mode .header {
+    background: rgba(255,255,255,0.75) !important;
+    backdrop-filter: blur(40px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.80) !important;
+    box-shadow: 0 1px 0 rgba(255,183,107,0.2), 0 8px 32px rgba(0,0,0,0.06) !important;
+  }
+
+  /* Left zone: logo + live tag */
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 220px;
+    padding-right: 20px;
+    border-right: 1px solid rgba(42,50,69,0.4);
+  }
+  body.light-mode .header-left { border-right-color: rgba(255,183,107,0.25); }
+
+  /* CENTER: Nav sits inside the header as flex row */
+  .nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 8px !important;
+    height: 52px !important;
+    justify-content: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+
+  /* Tabs inside unified bar — slimmer */
+  .nav-tab {
+    padding: 0 14px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    height: 52px !important;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid transparent !important;
+    border-top: 2px solid transparent;
+    transition: all 0.18s !important;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--text) !important; background: rgba(255,255,255,0.04); }
+  .nav-tab.active {
+    color: var(--accent) !important;
+    border-bottom-color: var(--accent) !important;
+    background: rgba(0,212,170,0.05);
+  }
+  body.light-mode .nav-tab { color: #6E6E73 !important; }
+  body.light-mode .nav-tab:hover { color: #1C1C1E !important; background: rgba(255,183,107,0.06); }
+  body.light-mode .nav-tab.active {
+    color: #7A4B1A !important;
+    border-bottom-color: #FFB36B !important;
+    background: rgba(255,183,107,0.10);
+  }
+
+  /* Right zone: controls + buttons */
+  .header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-width: fit-content;
+    padding-left: 12px;
+    border-left: 1px solid rgba(42,50,69,0.4);
+  }
+  body.light-mode .header-right { border-left-color: rgba(255,183,107,0.25); }
+
+  .header-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(42,50,69,0.6);
+    margin: 0 2px;
+  }
+  body.light-mode .header-divider { background: rgba(255,183,107,0.30); }
+
+  /* Upload btn label shortened on header */
+  .upload-btn, .add-doc-btn {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+  }
+
+  /* Main content — remove top padding since no separate nav bar */
+  .main {
+    padding: 24px 32px !important;
+    max-width: 1920px;
+    margin: 0 auto;
+  }
+
+  /* Content wrapper full width */
+  .content-wrapper {
+    max-width: none !important;
+  }
+
+  /* KPI grid — 5 columns always on laptop */
+  .kpi-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+
+  /* Footer spacing */
+  .footer {
+    padding: 16px 32px !important;
+  }
+
 </style>
 </head>
 <body>
@@ -1676,15 +1994,31 @@
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
-<!-- HEADER -->
+<!-- UNIFIED HEADER BAR — logo · nav · actions in one row -->
 <header class="header">
-  <div class="logo">
-    <div class="logo-dot"></div>
-    OHL · BD Performance
-  </div>
-  <div class="header-right">
+
+  <!-- LEFT: Logo + Live indicator -->
+  <div class="header-left">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      OHL · BD Performance
+    </div>
     <span class="last-updated" id="lastUpdated">Live data · Jan–May 2025</span>
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀️ Light</button>
+  </div>
+
+  <!-- CENTER: Navigation tabs -->
+  <nav class="nav" role="navigation">
+    <div class="nav-tab active" onclick="showSection('overview', this)">Overview</div>
+    <div class="nav-tab" onclick="showSection('doctors', this)">Doctor Tracker</div>
+    <div class="nav-tab" onclick="showSection('cohort', this)">Cohort Analysis</div>
+    <div class="nav-tab" onclick="showSection('atRisk', this)">At-Risk</div>
+    <div class="nav-tab" onclick="showSection('bdHealth', this)">BD Health</div>
+    <div class="nav-tab" onclick="showSection('analytics', this)">Analytics</div>
+    <div class="nav-tab" onclick="showSection('bdStatus', this)">BD Status</div>
+  </nav>
+
+  <!-- RIGHT: Action buttons + controls -->
+  <div class="header-right">
     <!-- GLASS INTENSITY CONTROL -->
     <div class="glass-intensity-control" id="glassIntensityControl">
       <span class="gi-label">Glass</span>
@@ -1692,37 +2026,29 @@
       <button class="gi-btn active" data-level="medium" onclick="setGlassIntensity('medium')">Med</button>
       <button class="gi-btn" data-level="high"   onclick="setGlassIntensity('high')">High</button>
     </div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀️ Light</button>
+    <div class="header-divider"></div>
     <button class="add-doc-btn" onclick="openAddDoctorModal()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       Add Doctor
     </button>
     <button class="add-doc-btn" onclick="openAddBDModal()" style="background:linear-gradient(135deg,rgba(251,113,133,0.15),rgba(251,113,133,0.08));border-color:rgba(251,113,133,0.4);color:var(--accent4);">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       Add BD
     </button>
     <button class="upload-btn" onclick="openUploadModal()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-      Upload Revenue Sheet
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+      Upload
     </button>
     <button class="upload-btn" onclick="exportAsHTML()" style="background:linear-gradient(135deg,rgba(129,140,248,0.15),rgba(129,140,248,0.08));border-color:rgba(129,140,248,0.4);color:var(--accent3);" title="Download HTML with current data baked in">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
       Export
     </button>
     <input type="file" id="fileInput" accept=".xlsx,.xls" onchange="handleFileSelect(event)">
   </div>
+
 </header>
 <div class="upload-toast" id="uploadToast"></div>
-
-<!-- NAVIGATION -->
-<nav class="nav">
-  <div class="nav-tab active" onclick="showSection('overview', this)">Overview</div>
-  <div class="nav-tab" onclick="showSection('doctors', this)">Doctor Tracker</div>
-  <div class="nav-tab" onclick="showSection('cohort', this)">Cohort Analysis</div>
-  <div class="nav-tab" onclick="showSection('atRisk', this)">At-Risk Tracker</div>
-  <div class="nav-tab" onclick="showSection('bdHealth', this)">BD Health</div>
-  <div class="nav-tab" onclick="showSection('analytics', this)">Analytics</div>
-  <div class="nav-tab" onclick="showSection('bdStatus', this)">BD Status</div>
-</nav>
 
 <!-- MAIN -->
 <main class="main">
@@ -2352,11 +2678,55 @@ const DASHBOARD_YEAR = 2025;
 
 let DOCTORS = [];
 let BD_COLORS = {};
-let PIPELINE = [];  // ✅ FIX: Added PIPELINE cache for registered doctors
 let currentBDFilter = 'All';
 let selectedUploadMonth = null;
 let uploadedFile = null;
 let isDarkMode = true;
+
+// ═══════════════════════════════════════════════════════
+// PERFORMANCE OPTIMIZATION - Global Caching & Indexing
+// ═══════════════════════════════════════════════════════
+let DOC_INDEX = {}; // Maps "bd_name|month" → [doctors...]
+let DOC_BY_ID = {}; // Maps "doctor_id" → doctor object
+let ACTIVITY_AGGREGATES = {}; // Cache computed stats per month
+let renderTimeout = null; // Debounce render calls
+
+function rebuildDocIndices() {
+  DOC_INDEX = {};
+  DOC_BY_ID = {};
+  
+  DOCTORS.forEach(d => {
+    const monthKey = `${d.bd}|${d.onboard}`;
+    if (!DOC_INDEX[monthKey]) DOC_INDEX[monthKey] = [];
+    DOC_INDEX[monthKey].push(d);
+    DOC_BY_ID[d.id] = d;
+  });
+}
+
+function precomputeActivityAggregates(month) {
+  const bds = Object.keys(BD_COLORS);
+  const aggregates = {};
+  
+  bds.forEach(bd => {
+    const docList = DOC_INDEX[`${bd}|${month}`] || [];
+    aggregates[bd] = {
+      activeDocs: docList.length,
+      monthRev: docList.reduce((sum, d) => sum + (d[month] || 0), 0)
+    };
+  });
+  
+  ACTIVITY_AGGREGATES[month] = aggregates;
+  return aggregates;
+}
+
+function scheduleRender() {
+  clearTimeout(renderTimeout);
+  renderTimeout = setTimeout(() => {
+    loadActivityData();
+    loadAnalyticsData();
+    loadBDInactiveData();
+  }, 300);
+}
 
 // ═══════════════════════════════════════════════════════
 // PIPELINE ENGINE — localStorage-backed registered doctors
@@ -2703,19 +3073,19 @@ let analyticsData = {
 
 async function loadAnalyticsData() {
   try {
-    const { data, error } = await sb
+    const { data, error } = await supabase
       .from('analytics')
       .select('*')
       .single();
     if (data) analyticsData = { registered: data.registered || 0, trial: data.trial || 0, onboarded: data.onboarded || 0 };
   } catch (e) {
-    console.error('Analytics load failed:', e.message);
+    console.log('Analytics table may not exist yet');
   }
 }
 
 async function saveAnalyticsData() {
   try {
-    const { data, error } = await sb
+    const { data, error } = await supabase
       .from('analytics')
       .upsert([{ id: 1, ...analyticsData }], { onConflict: 'id' });
     if (error) console.error('Error saving analytics:', error);
@@ -2725,162 +3095,338 @@ async function saveAnalyticsData() {
 }
 
 function getRegisteredCount() {
-  // ✅ FIX: Use pipelineLoad() instead of undefined PIPELINE variable
-  const pipeline = pipelineLoad();
-  const pipelineCount = pipeline ? pipeline.filter(p => p && p.status !== 'deleted').length : 0;
-  return pipelineCount;
+  try {
+    const pipeline = pipelineLoad(); // Use the pipelineLoad function instead of undefined PIPELINE
+    const pipelineCount = pipeline ? pipeline.filter(p => p && p.status !== 'deleted').length : 0;
+    return pipelineCount;
+  } catch (e) {
+    console.warn('[getRegisteredCount] Error:', e);
+    return 0;
+  }
 }
 
 function getTrialCount() {
-  // ✅ FIX: Removed !d.dropMonth check (property doesn't exist in schema)
-  // Trial = doctors with onboard month set (registered in system)
-  const trialCount = DOCTORS.filter(d => d.onboard).length;
-  return trialCount;
+  try {
+    const trialCount = DOCTORS && DOCTORS.length > 0 ? DOCTORS.filter(d => d && d.onboard && !d.dropMonth).length : 0;
+    return trialCount;
+  } catch (e) {
+    console.warn('[getTrialCount] Error:', e);
+    return 0;
+  }
 }
 
 function getOnboardedCount() {
-  // ✅ FIX: Removed !d.dropMonth check
-  // Onboarded = doctors with any revenue > 0 (active/successful)
-  const onboardedCount = DOCTORS.filter(d => {
-    const hasRev = MONTHS.some(m => (d[m] || 0) > 0);
-    return hasRev;
-  }).length;
-  return onboardedCount;
+  try {
+    const onboardedCount = DOCTORS && DOCTORS.length > 0 ? DOCTORS.filter(d => {
+      if (!d) return false;
+      const hasRev = MONTHS && MONTHS.length > 0 ? MONTHS.some(m => (d[m] || 0) > 0) : false;
+      return hasRev;
+    }).length : 0;
+    return onboardedCount;
+  } catch (e) {
+    console.warn('[getOnboardedCount] Error:', e);
+    return 0;
+  }
 }
 
 function renderAnalyticsTab() {
   const container = document.getElementById('analyticsContent');
-  if (!container) return;
-
-  // ✅ FIX: Show loading state until DOCTORS is populated
-  if (DOCTORS.length === 0) {
-    container.innerHTML = `
-      <div class="content-wrapper">
-        <div style="padding:60px 20px;text-align:center;color:var(--muted);">
-          <div style="font-size:14px;margin-bottom:8px;">📊 Loading analytics...</div>
-          <div style="font-size:12px;font-family:var(--mono);">Pulling data from database</div>
-        </div>
-      </div>
-    `;
+  if (!container) {
+    console.warn('analyticsContent container not found');
     return;
   }
 
-  // Get counts - now using correct functions
-  const registered = getRegisteredCount();
-  const trial = getTrialCount();
-  const onboarded = getOnboardedCount();
+  try {
+    console.log('[Analytics] Starting render');
+    const registered = getRegisteredCount();
+    console.log('[Analytics] Registered:', registered);
+    
+    const trial = getTrialCount();
+    console.log('[Analytics] Trial:', trial);
+    
+    const onboarded = getOnboardedCount();
+    console.log('[Analytics] Onboarded:', onboarded);
+    
+    const dropout = Math.max(0, registered - onboarded);
+    console.log('[Analytics] Dropout:', dropout);
 
-  const regToTrial = registered > 0 ? ((trial / registered) * 100).toFixed(1) : 0;
-  const trialToOnboard = trial > 0 ? ((onboarded / trial) * 100).toFixed(1) : 0;
-  const regToOnboard = registered > 0 ? ((onboarded / registered) * 100).toFixed(1) : 0;
+    const regToTrial = registered > 0 ? ((trial / registered) * 100).toFixed(1) : 0;
+    const trialToOnboard = trial > 0 ? ((onboarded / trial) * 100).toFixed(1) : 0;
+    const regToOnboard = registered > 0 ? ((onboarded / registered) * 100).toFixed(1) : 0;
+    const dropoutRate = registered > 0 ? ((dropout / registered) * 100).toFixed(1) : 0;
+    console.log('[Analytics] Percentages calculated');
 
-  const maxVal = Math.max(registered, trial, onboarded) || 1;
-  const regWidth = (registered / maxVal) * 100;
-  const trialWidth = (trial / maxVal) * 100;
-  const onboardWidth = (onboarded / maxVal) * 100;
+    const maxVal = Math.max(registered, trial, onboarded, dropout) || 1;
+    const regWidth = (registered / maxVal) * 100;
+    const trialWidth = (trial / maxVal) * 100;
+    const onboardWidth = (onboarded / maxVal) * 100;
+    const dropoutWidth = Math.max(0, (dropout / maxVal) * 100);
+    console.log('[Analytics] Widths calculated');
 
-  container.innerHTML = `
+    const html = `
     <div class="content-wrapper">
+      <!-- KPI CARDS -->
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
-        <div class="card" style="background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.3);">
-          <div style="padding:16px;">
-            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-bottom:8px;">REGISTERED</div>
-            <div style="font-size:32px;font-weight:700;color:var(--accent5);">${registered}</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:6px;">doctors in pipeline</div>
-          </div>
-        </div>
-        <div class="card" style="background:rgba(129,140,248,0.1);border:1px solid rgba(129,140,248,0.3);">
-          <div style="padding:16px;">
-            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-bottom:8px;">TRIAL</div>
-            <div style="font-size:32px;font-weight:700;color:var(--accent3);">${trial}</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:6px;">${regToTrial}% conversion</div>
-          </div>
-        </div>
-        <div class="card" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);">
-          <div style="padding:16px;">
-            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-bottom:8px;">ONBOARDED</div>
-            <div style="font-size:32px;font-weight:700;color:var(--green);">${onboarded}</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:6px;">${regToOnboard}% overall</div>
-          </div>
-        </div>
-        <div class="card" style="background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.3);">
-          <div style="padding:16px;">
-            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-bottom:8px;">DROPOUT</div>
-            <div style="font-size:32px;font-weight:700;color:var(--red);">${registered - onboarded}</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:6px;">${registered > 0 ? (((registered - onboarded) / registered) * 100).toFixed(0) : 0}% attrition</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom:24px;">
-        <div class="card-header">
-          <span class="card-title">Conversion Funnel — Bar Chart</span>
-          <div style="font-size:11px;color:var(--muted);font-family:var(--mono);">Step-by-step conversion rates</div>
-        </div>
-        <div style="padding:24px;">
-          <div style="display:flex;flex-direction:column;gap:20px;">
-            <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-                <span style="font-size:12px;color:var(--text);font-weight:500;">Registered</span>
-                <span style="font-size:12px;color:var(--accent5);font-family:var(--mono);">${registered}</span>
-              </div>
-              <div style="width:100%;height:32px;background:var(--faint);border-radius:4px;overflow:hidden;">
-                <div style="height:100%;width:100%;background:linear-gradient(90deg,rgba(250,204,21,0.6),rgba(250,204,21,0.3));display:flex;align-items:center;padding-left:12px;font-size:12px;color:var(--bg);font-weight:600;">${registered}</div>
+        <div class="card" style="background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.3);border-left:4px solid rgba(250,204,21,0.6);">
+          <div style="padding:20px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:48px;height:48px;background:rgba(250,204,21,0.15);border:1px solid rgba(250,204,21,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">👥</div>
+              <div style="flex:1;">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-bottom:6px;">REGISTERED DOCTORS</div>
+                <div style="font-size:28px;font-weight:700;color:var(--text);">${registered}</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:4px;">Doctors in pipeline</div>
               </div>
             </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-                <span style="font-size:12px;color:var(--text);font-weight:500;">Trial (${regToTrial}%)</span>
-                <span style="font-size:12px;color:var(--accent3);font-family:var(--mono);">${trial}</span>
-              </div>
-              <div style="width:100%;height:32px;background:var(--faint);border-radius:4px;overflow:hidden;">
-                <div style="height:100%;width:${trialWidth}%;background:linear-gradient(90deg,rgba(129,140,248,0.6),rgba(129,140,248,0.3));display:flex;align-items:center;padding-left:12px;font-size:12px;color:var(--bg);font-weight:600;">${trial}</div>
+          </div>
+        </div>
+        <div class="card" style="background:rgba(129,140,248,0.1);border:1px solid rgba(129,140,248,0.3);border-left:4px solid rgba(129,140,248,0.6);">
+          <div style="padding:20px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:48px;height:48px;background:rgba(129,140,248,0.15);border:1px solid rgba(129,140,248,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">🧪</div>
+              <div style="flex:1;">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-bottom:6px;">TRIAL DOCTORS</div>
+                <div style="font-size:28px;font-weight:700;color:var(--text);">${trial}</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:4px;">${regToTrial}% conversion</div>
               </div>
             </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-                <span style="font-size:12px;color:var(--text);font-weight:500;">Onboarded (${trialToOnboard}%)</span>
-                <span style="font-size:12px;color:var(--green);font-family:var(--mono);">${onboarded}</span>
+          </div>
+        </div>
+        <div class="card" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-left:4px solid rgba(16,185,129,0.6);">
+          <div style="padding:20px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:48px;height:48px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">✅</div>
+              <div style="flex:1;">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-bottom:6px;">ONBOARDED DOCTORS</div>
+                <div style="font-size:28px;font-weight:700;color:var(--text);">${onboarded}</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:4px;">100.0% conversion</div>
               </div>
-              <div style="width:100%;height:32px;background:var(--faint);border-radius:4px;overflow:hidden;">
-                <div style="height:100%;width:${onboardWidth}%;background:linear-gradient(90deg,rgba(16,185,129,0.6),rgba(16,185,129,0.3));display:flex;align-items:center;padding-left:12px;font-size:12px;color:var(--bg);font-weight:600;">${onboarded}</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.3);border-left:4px solid rgba(244,63,94,0.6);">
+          <div style="padding:20px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:48px;height:48px;background:rgba(244,63,94,0.15);border:1px solid rgba(244,63,94,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">📉</div>
+              <div style="flex:1;">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-bottom:6px;">DROPOUT DOCTORS</div>
+                <div style="font-size:28px;font-weight:700;color:var(--text);">-${dropout}</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:4px;">-${dropoutRate}% attrition</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- CONVERSION FUNNEL + PATH (2-column layout) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+        <!-- LEFT: Bar Funnel -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Conversion Funnel</span>
+            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);">Step-by-step</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="margin-bottom:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);">1. REGISTERED</span>
+                <span style="font-size:11px;font-weight:600;color:var(--accent5);">${registered}</span>
+              </div>
+              <div style="width:100%;height:32px;background:var(--faint);border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:100%;background:linear-gradient(90deg,rgba(250,204,21,0.6),rgba(250,204,21,0.3));display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:600;color:white;">${registered} Doctors</div>
+              </div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);">2. TRIAL</span>
+                <span style="font-size:11px;font-weight:600;color:var(--accent3);">${trial} (${regToTrial}%)</span>
+              </div>
+              <div style="width:100%;height:32px;background:var(--faint);border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:${trialWidth}%;background:linear-gradient(90deg,rgba(129,140,248,0.6),rgba(129,140,248,0.3));display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:600;color:white;">${trial} Doctors</div>
+              </div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);">3. ONBOARDED</span>
+                <span style="font-size:11px;font-weight:600;color:var(--green);">${onboarded} (100.0%)</span>
+              </div>
+              <div style="width:100%;height:32px;background:var(--faint);border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:${onboardWidth}%;background:linear-gradient(90deg,rgba(16,185,129,0.6),rgba(16,185,129,0.3));display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:600;color:white;">${onboarded} Doctors</div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);">4. DROPOUT</span>
+                <span style="font-size:11px;font-weight:600;color:var(--red);">-${dropout} (-${dropoutRate}%)</span>
+              </div>
+              <div style="width:100%;height:32px;background:var(--faint);border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:${dropoutWidth}%;background:linear-gradient(90deg,rgba(244,63,94,0.6),rgba(244,63,94,0.3));display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:600;color:white;">-${dropout} Doctors</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Conversion Path Visualization -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Conversion Path Visualization</span>
+          </div>
+          <div style="padding:30px;display:flex;gap:10px;align-items:center;justify-content:space-between;">
+            <div style="text-align:center;flex:1;">
+              <div style="width:100%;aspect-ratio:1;max-width:90px;background:linear-gradient(135deg,rgba(250,204,21,0.3),rgba(250,204,21,0.15));border:1px solid rgba(250,204,21,0.3);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:10px;">
+                <span style="font-size:24px;font-weight:700;color:var(--accent5);">${registered}</span>
+              </div>
+              <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;">Registered</span>
+              <span style="font-size:9px;color:var(--muted);margin-top:2px;">100%</span>
+            </div>
+            <div style="font-size:20px;color:var(--border);">→</div>
+            <div style="text-align:center;flex:1;">
+              <div style="width:100%;aspect-ratio:1;max-width:90px;background:linear-gradient(135deg,rgba(129,140,248,0.3),rgba(129,140,248,0.15));border:1px solid rgba(129,140,248,0.3);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:10px;">
+                <span style="font-size:24px;font-weight:700;color:var(--accent3);">${trial}</span>
+              </div>
+              <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;">Trial</span>
+              <span style="font-size:9px;color:var(--accent3);margin-top:2px;">${regToTrial}%</span>
+            </div>
+            <div style="font-size:20px;color:var(--border);">→</div>
+            <div style="text-align:center;flex:1;">
+              <div style="width:100%;aspect-ratio:1;max-width:90px;background:linear-gradient(135deg,rgba(16,185,129,0.3),rgba(16,185,129,0.15));border:1px solid rgba(16,185,129,0.3);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:10px;">
+                <span style="font-size:24px;font-weight:700;color:var(--green);">${onboarded}</span>
+              </div>
+              <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;">Onboarded</span>
+              <span style="font-size:9px;color:var(--green);margin-top:2px;">100.0%</span>
+            </div>
+            <div style="font-size:20px;color:var(--border);">→</div>
+            <div style="text-align:center;flex:1;">
+              <div style="width:100%;aspect-ratio:1;max-width:90px;background:linear-gradient(135deg,rgba(244,63,94,0.3),rgba(244,63,94,0.15));border:1px solid rgba(244,63,94,0.3);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:10px;">
+                <span style="font-size:24px;font-weight:700;color:var(--red);">-${dropout}</span>
+              </div>
+              <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;">Dropout</span>
+              <span style="font-size:9px;color:var(--red);margin-top:2px;">-${dropoutRate}%</span>
+            </div>
+          </div>
+          <div style="padding:0 20px 20px;border-top:1px solid var(--border);margin-top:12px;margin-left:20px;margin-right:20px;">
+            <div style="padding:12px;background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.2);border-radius:6px;font-size:11px;text-align:center;color:var(--text);line-height:1.5;">Focus on improving onboarding to reduce dropout and maximize retention.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM: Bar Chart + Line Chart -->
+      <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px;margin-bottom:24px;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Conversion Funnel — Bar Chart</span>
+            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);">Conversion rates</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;">
+                  <span>Registered</span>
+                  <span>${registered}</span>
+                </div>
+                <div style="height:24px;background:var(--faint);border-radius:3px;overflow:hidden;">
+                  <div style="height:100%;width:100%;background:rgba(250,204,21,0.5);"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;">
+                  <span>Trial (${regToTrial}%)</span>
+                  <span>${trial}</span>
+                </div>
+                <div style="height:24px;background:var(--faint);border-radius:3px;overflow:hidden;">
+                  <div style="height:100%;width:${trialWidth}%;background:rgba(129,140,248,0.5);"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;">
+                  <span>Onboarded (100%)</span>
+                  <span>${onboarded}</span>
+                </div>
+                <div style="height:24px;background:var(--faint);border-radius:3px;overflow:hidden;">
+                  <div style="height:100%;width:${onboardWidth}%;background:rgba(16,185,129,0.5);"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;">
+                  <span>Dropout (-${dropoutRate}%)</span>
+                  <span>-${dropout}</span>
+                </div>
+                <div style="height:24px;background:var(--faint);border-radius:3px;overflow:hidden;">
+                  <div style="height:100%;width:${dropoutWidth}%;background:rgba(244,63,94,0.5);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Conversion Rate Over Time</span>
+          </div>
+          <div style="padding:20px;height:280px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+            <div style="font-size:48px;">📈</div>
+            <div style="text-align:center;color:var(--muted);">
+              <div style="font-size:12px;font-weight:600;">Tracking doctor conversion monthly</div>
+              <div style="font-size:10px;margin-top:4px;">Registered → Trial → Onboarded → Dropout</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUMMARY CARDS -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Conversion Path Visualization</span>
+          <span class="card-title">Conversion Summary</span>
         </div>
-        <div style="padding:32px;display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;">
-          <div style="text-align:center;">
-            <div style="width:100px;height:100px;background:linear-gradient(135deg,rgba(250,204,21,0.8),rgba(250,204,21,0.5));border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:12px;box-shadow:0 8px 24px rgba(250,204,21,0.2);">
-              <span style="font-size:32px;font-weight:700;color:var(--bg);">${registered}</span>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:20px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-size:20px;">👥</span>
+              <span style="font-size:12px;font-weight:600;color:var(--text);">Registered</span>
             </div>
-            <span style="font-size:11px;color:var(--muted);font-family:var(--mono);font-weight:500;">Registered</span>
+            <div style="font-size:11px;color:var(--muted);">Doctors entered into pipeline</div>
+            <div style="font-size:16px;font-weight:700;color:var(--accent5);margin-top:8px;">${registered}</div>
+            <div style="font-size:10px;color:var(--accent5);font-weight:600;margin-top:4px;">100%</div>
           </div>
-          <div style="font-size:28px;color:var(--border);">→</div>
-          <div style="text-align:center;">
-            <div style="width:100px;height:100px;background:linear-gradient(135deg,rgba(129,140,248,0.8),rgba(129,140,248,0.5));border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:12px;box-shadow:0 8px 24px rgba(129,140,248,0.2);">
-              <span style="font-size:32px;font-weight:700;color:var(--bg);">${trial}</span>
-              <span style="font-size:9px;color:rgba(255,255,255,0.7);margin-top:2px;">${regToTrial}%</span>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-size:20px;">🧪</span>
+              <span style="font-size:12px;font-weight:600;color:var(--text);">Trial</span>
             </div>
-            <span style="font-size:11px;color:var(--muted);font-family:var(--mono);font-weight:500;">Trial</span>
+            <div style="font-size:11px;color:var(--muted);">Doctors started trial</div>
+            <div style="font-size:16px;font-weight:700;color:var(--accent3);margin-top:8px;">${trial}</div>
+            <div style="font-size:10px;color:var(--accent3);font-weight:600;margin-top:4px;">${regToTrial}%</div>
           </div>
-          <div style="font-size:28px;color:var(--border);">→</div>
-          <div style="text-align:center;">
-            <div style="width:100px;height:100px;background:linear-gradient(135deg,rgba(16,185,129,0.8),rgba(16,185,129,0.5));border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:12px;box-shadow:0 8px 24px rgba(16,185,129,0.2);">
-              <span style="font-size:32px;font-weight:700;color:var(--bg);">${onboarded}</span>
-              <span style="font-size:9px;color:rgba(255,255,255,0.7);margin-top:2px;">${trialToOnboard}%</span>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-size:20px;">✅</span>
+              <span style="font-size:12px;font-weight:600;color:var(--text);">Onboarded</span>
             </div>
-            <span style="font-size:11px;color:var(--muted);font-family:var(--mono);font-weight:500;">Onboarded</span>
+            <div style="font-size:11px;color:var(--muted);">Doctors successfully onboarded</div>
+            <div style="font-size:16px;font-weight:700;color:var(--green);margin-top:8px;">${onboarded}</div>
+            <div style="font-size:10px;color:var(--green);font-weight:600;margin-top:4px;">100.0%</div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-size:20px;">📉</span>
+              <span style="font-size:12px;font-weight:600;color:var(--text);">Dropout</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);">Doctors lost in the process</div>
+            <div style="font-size:16px;font-weight:700;color:var(--red);margin-top:8px;">-${dropout}</div>
+            <div style="font-size:10px;color:var(--red);font-weight:600;margin-top:4px;">-${dropoutRate}%</div>
           </div>
         </div>
       </div>
     </div>
-  `;
+    `;
+
+    console.log('[Analytics] Template created, length:', html.length);
+    container.innerHTML = html;
+    console.log('[Analytics] Render complete');
+  } catch (err) {
+    console.error('[Analytics] CRITICAL ERROR:', err);
+    console.error('[Analytics] Error stack:', err.stack);
+    container.innerHTML = '<div style="padding:20px;color:var(--red);">Error loading analytics: ' + err.message + '</div>';
+  }
 }
 
 function updateAnalyticsData() {
@@ -2895,7 +3441,7 @@ let bdInactiveData = {};
 
 async function loadBDInactiveData() {
   try {
-    const { data, error } = await sb
+    const { data, error } = await supabase
       .from('bd_inactive')
       .select('*');
     if (data) {
@@ -2905,14 +3451,14 @@ async function loadBDInactiveData() {
       });
     }
   } catch (e) {
-    console.error('BD inactive load failed:', e.message);
+    console.log('BD inactive table may not exist yet');
   }
 }
 
 async function saveBDInactiveData(bdName, month) {
   try {
     bdInactiveData[bdName] = month || null;
-    const { error } = await sb
+    const { error } = await supabase
       .from('bd_inactive')
       .upsert([{ bd_name: bdName, inactive_from_month: month }], { onConflict: 'bd_name' });
     if (error) console.error('Error saving BD inactive:', error);
@@ -3078,22 +3624,12 @@ async function loadFromSupabase() {
       return doc;
     });
 
-    // ✅ FIX: Initialize PIPELINE cache after Supabase load
-    PIPELINE = pipelineLoad();
-    
     hideLoader();
+    // ✅ OPTIMIZATION: Rebuild indices for O(1) lookups
+    rebuildDocIndices();
     renderAll();
     rebuildBDFilterBar();
     updateLastUpdated();
-    
-    // ✅ FIX: Re-render active tab to show correct analytics data
-    // This prevents stale zero-state if user clicked Analytics before Supabase loaded
-    const activeSection = document.querySelector('.section.active');
-    if (activeSection && activeSection.id === 'analytics') {
-      renderAnalyticsTab();
-    } else if (activeSection && activeSection.id === 'bdStatus') {
-      renderBDStatusTab();
-    }
   } catch (err) {
     hideLoader();
     showToast('❌ Database error: ' + err.message);
@@ -4639,8 +5175,13 @@ function renderActivityAnalysis(month) {
   const bdStats = bds.map(bd => {
     const key = `${bd}_${month}_2025`;
     const act = activityData[key] || { visits: 0, registrations: 0 };
-    const monthRev = DOCTORS.filter(d => d.bd === bd).reduce((s, d) => s + (d[month] || 0), 0);
-    const activeDocs = DOCTORS.filter(d => d.bd === bd && (d[month] || 0) > 0).length;
+    
+    // ✅ OPTIMIZATION: Use pre-computed index instead of filtering entire DOCTORS array
+    if (!ACTIVITY_AGGREGATES[month]) {
+      precomputeActivityAggregates(month);
+    }
+    const { monthRev, activeDocs } = ACTIVITY_AGGREGATES[month][bd] || { monthRev: 0, activeDocs: 0 };
+    
     return {
       bd,
       visits: act.visits,
@@ -4699,15 +5240,31 @@ function renderActivityAnalysis(month) {
   const maxVisits = Math.max(...bdStats.map(b => b.visits), 1);
   const maxRev = Math.max(...bdStats.map(b => b.monthRev), 1);
 
-  canvas.innerHTML = bdStats.map((b, i) => {
-    if (b.visits === 0 && b.monthRev === 0) return ''; // skip inactive BDs
-    // Pad slightly inside the canvas
+  // ✅ OPTIMIZATION: Use DocumentFragment instead of string concatenation
+  const fragment = document.createDocumentFragment();
+  canvas.innerHTML = ''; // Clear once
+  
+  bdStats.forEach((b) => {
+    if (b.visits === 0 && b.monthRev === 0) return;
+    
+    const div = document.createElement('div');
+    div.className = 'quadrant-dot';
+    
     const x = 6 + (b.visits / maxVisits) * 88;
     const y = 6 + (1 - b.monthRev / maxRev) * 88;
-    const color = BD_COLORS[b.bd]?.hex || '#888';
+    
+    div.style.left = x + '%';
+    div.style.top = y + '%';
+    div.style.background = BD_COLORS[b.bd]?.hex || '#888';
+    
     const init = b.bd.split(' ')[0].slice(0, 2).toUpperCase();
-    return `<div class="quadrant-dot" style="left:${x}%;top:${y}%;background:${color};" title="${b.bd}: ${b.visits} visits · ${fmt(b.monthRev)} revenue · ${fmt(b.revPerVisit)}/visit">${init}</div>`;
-  }).join('');
+    div.textContent = init;
+    div.title = `${b.bd}: ${b.visits} visits · ${fmt(b.monthRev)} revenue · ${fmt(b.revPerVisit)}/visit`;
+    
+    fragment.appendChild(div);
+  });
+  
+  canvas.appendChild(fragment); // Single DOM operation
 
   // ── Leaderboard — sorted by ₹/visit (highest first), BDs with no activity go to bottom ──
   const ranked = [...bdStats].sort((a, b) => {
@@ -4723,10 +5280,17 @@ function renderActivityAnalysis(month) {
     ? activeRevPerVisits.sort((a, b) => a - b)[Math.floor(activeRevPerVisits.length / 2)]
     : 0;
 
-  document.getElementById('leaderboardBody').innerHTML = ranked.map((b, i) => {
+  // ✅ OPTIMIZATION: Use DocumentFragment instead of string concatenation
+  const leaderboardBody = document.getElementById('leaderboardBody');
+  const tableFragment = document.createDocumentFragment();
+  leaderboardBody.innerHTML = ''; // Clear once
+  
+  ranked.forEach((b, i) => {
     const rpvClass = b.visits === 0 ? '' : (b.revPerVisit >= medianRpv * 1.5 ? 'eff-good' : b.revPerVisit >= medianRpv * 0.75 ? 'eff-mid' : 'eff-bad');
     const convClass = b.visits === 0 ? '' : (b.convRate >= 30 ? 'eff-good' : b.convRate >= 15 ? 'eff-mid' : 'eff-bad');
-    return `<tr>
+    
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td class="leaderboard-rank ${i === 0 && b.visits > 0 ? 'top' : ''}">${i + 1}</td>
       <td style="font-weight:500;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${BD_COLORS[b.bd]?.hex || '#888'};margin-right:6px;"></span>${b.bd.split(' ')[0]}</td>
       <td class="mono-val" style="color:${b.visits > 0 ? 'var(--text)' : 'var(--muted)'};">${b.visits || '—'}</td>
@@ -4734,8 +5298,12 @@ function renderActivityAnalysis(month) {
       <td class="${convClass}">${b.visits > 0 ? b.convRate.toFixed(0) + '%' : '—'}</td>
       <td class="${rpvClass}">${b.visits > 0 ? fmt(b.revPerVisit) : '—'}</td>
       <td class="${rpvClass}">${b.regs > 0 ? fmt(b.revPerReg) : '—'}</td>
-    </tr>`;
-  }).join('');
+    `;
+    
+    tableFragment.appendChild(tr);
+  });
+  
+  leaderboardBody.appendChild(tableFragment); // Single DOM operation
 
   // ── Auto-generated insight ──
   const insightEl = document.getElementById('efficiencyInsight');
